@@ -157,27 +157,49 @@ function createOrgs() {
 
     . organizations/fabric-ca/registerEnroll.sh
 
-  for ((i = 1; i <= $ORGANIZATION_NUMBER; i++)) do
-    while :
-    do
-      if [ ! -f "organizations/fabric-ca/org$i/tls-cert.pem" ]; then
+    # for ((i = 1; i <= $ORGANIZATION_NUMBER; i++)); do
+    #   while [ ! -f "organizations/fabric-ca/org$i/tls-cert.pem" ]; do
+    #       sleep 1
+    #   done
+
+    #   infoln "Creating Org$i Identities"
+    #   createOrgWithN $i
+    # done
+
+    while [ ! -f "organizations/fabric-ca/org1/tls-cert.pem" ]; do
         sleep 1
-      else
-        break
-      fi
     done
 
-    infoln "Creating Org$i Identities"
-    createOrgWithN $i
-  done
+    infoln "Creating Org1 Identities"
+    createOrgWithN 1
+
+    while [ ! -f "organizations/fabric-ca/org2/tls-cert.pem" ]; do
+        sleep 1
+    done
+
+    infoln "Creating Org2 Identities"
+    createOrgWithN 2
+
+    while [ ! -f "organizations/fabric-ca/org3/tls-cert.pem" ]; do
+        sleep 1
+    done
+
+    infoln "Creating Org3 Identities"
+    createOrgWithN 3
+
+    while [ ! -f "organizations/fabric-ca/org4/tls-cert.pem" ]; do
+        sleep 1
+    done
+
+    infoln "Creating Org4 Identities"
+    createOrgWithN 4
     
     infoln "Creating Orderer Org Identities"
     createOrderer
-
   fi
 
   infoln "Generating CCP files for orgs"
-  ./organizations/ccp-generate.sh
+  ./organizations/ccp-generate.sh $ORGANIZATION_NUMBER $PEER_PER_ORGANIZATION_NUMBER
 }
 
 # Once you create the organization crypto material, you need to create the
@@ -297,7 +319,7 @@ function networkDown() {
     # remove orderer block and other channel configuration transactions and certs
     docker run --rm -v $(pwd):/data busybox sh -c 'cd /data && rm -rf system-genesis-block/*.block organizations/peerOrganizations organizations/ordererOrganizations'
     ## remove fabric ca artifacts
-    for ((i = 1; i <= $ORGANIZATION_NUMBER; i++)) do
+    for ((i = 1; i <= $ORGANIZATION_NUMBER; i++)); do
       docker run --rm -v $(pwd):/data busybox sh -c "cd /data && rm -rf organizations/fabric-ca/org$i/msp organizations/fabric-ca/org1/tls-cert.pem organizations/fabric-ca/org1/ca-cert.pem organizations/fabric-ca/org1/IssuerPublicKey organizations/fabric-ca/org1/IssuerRevocationPublicKey organizations/fabric-ca/org1/fabric-ca-server.db"
     done
     docker run --rm -v $(pwd):/data busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/ordererOrg/msp organizations/fabric-ca/ordererOrg/tls-cert.pem organizations/fabric-ca/ordererOrg/ca-cert.pem organizations/fabric-ca/ordererOrg/IssuerPublicKey organizations/fabric-ca/ordererOrg/IssuerRevocationPublicKey organizations/fabric-ca/ordererOrg/fabric-ca-server.db'

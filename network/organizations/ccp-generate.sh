@@ -26,7 +26,7 @@ function yaml_ccp {
         organizations/ccp-template.yaml | sed -e $'s/\\\\n/\\\n          /g'
 }
 
-for ((i=1 ; i <= $1 ; ++i)) do
+for ((i=1; i <= $1; ++i)) do
     P0PORT="$((6 + $i))051"
     CAPORT="$((6 + $i))054"
     PEERPEM=${ORGANIZATIONS_PATH}/peerOrganizations/org$i.example.com/tlsca/tlsca.org$i.example.com-cert.pem
