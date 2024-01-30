@@ -16,18 +16,9 @@ export PATH=${PWD}/bin:$PATH
 export FABRIC_CFG_PATH=${PWD}/configtx
 export VERBOSE=false
 
-export DOCKER_PATH=${PWD}/docker
-export ORGANIZATIONS_PATH=${PWD}/organizations
 export CONFIG_PATH=${PWD}/config
-export SCRIPTS_PATH=${PWD}/scripts
-export CHANNEL_ARTIFACTS_PATH=${PWD}/channel-artifacts
-export SYSTEM_GENESIS_BLOCK_PATH=${PWD}/system-genesis-block
-export DOCKER_COMPOSE_FILE_PATH=${DOCKER_PATH}/hyperledger.yaml
-export CRYPTOGEN_PATH=${ORGANIZATIONS_PATH}/cryptogen
-export DOCKER_COMPOSE_CA_FILE_PATH=${DOCKER_PATH}/docker-compose-ca.yaml
+export ORGANIZATION_NUMBER=2
 
-export ORGANIZATION_NUMBER=4
-export PEER_PER_ORGANIZATION=4
 
 . scripts/utils.sh
 
@@ -65,7 +56,7 @@ function checkPrereqs() {
   ## Check if your have cloned the peer binaries and configuration files.
   peer version > /dev/null 2>&1
 
-  if [[ $? -ne 0 || ! -d "./config" ]]; then
+  if [[ $? -ne 0 || ! -d $CONFIG_PATH ]]; then
     errorln "Peer binary and configuration files not found.."
     errorln
     errorln "Follow the instructions in the Fabric docs to install the Fabric Binaries:"
@@ -148,6 +139,45 @@ function createOrgs() {
     rm -Rf organizations/peerOrganizations && rm -Rf organizations/ordererOrganizations
   fi
 
+  # Create crypto material using cryptogen
+  if [ "$CRYPTO" == "cryptogen" ]; then
+    which cryptogen
+    if [ "$?" -ne 0 ]; then
+      fatalln "cryptogen tool not found. exiting"
+    fi
+    infoln "Generating certificates using cryptogen tool"
+
+    infoln "Creating Org1 Identities"
+
+    set -x
+    cryptogen generate --config=./organizations/cryptogen/crypto-config-org1.yaml --output="organizations"
+    res=$?
+    { set +x; } 2>/dev/null
+    if [ $res -ne 0 ]; then
+      fatalln "Failed to generate certificates..."
+    fi
+
+    infoln "Creating Org2 Identities"
+
+    set -x
+    cryptogen generate --config=./organizations/cryptogen/crypto-config-org2.yaml --output="organizations"
+    res=$?
+    { set +x; } 2>/dev/null
+    if [ $res -ne 0 ]; then
+      fatalln "Failed to generate certificates..."
+    fi
+
+    infoln "Creating Orderer Org Identities"
+
+    set -x
+    cryptogen generate --config=./organizations/cryptogen/crypto-config-orderer.yaml --output="organizations"
+    res=$?
+    { set +x; } 2>/dev/null
+    if [ $res -ne 0 ]; then
+      fatalln "Failed to generate certificates..."
+    fi
+
+  fi
 
   # Create crypto material using Fabric CA
   if [ "$CRYPTO" == "Certificate Authorities" ]; then
@@ -157,49 +187,32 @@ function createOrgs() {
 
     . organizations/fabric-ca/registerEnroll.sh
 
-    # for ((i = 1; i <= $ORGANIZATION_NUMBER; i++)); do
-    #   while [ ! -f "organizations/fabric-ca/org$i/tls-cert.pem" ]; do
-    #       sleep 1
-    #   done
-
-    #   infoln "Creating Org$i Identities"
-    #   createOrgWithN $i
-    # done
-
-    while [ ! -f "organizations/fabric-ca/org1/tls-cert.pem" ]; do
+  while :
+    do
+      if [ ! -f "organizations/fabric-ca/org1/tls-cert.pem" ]; then
         sleep 1
+      else
+        break
+      fi
     done
 
-    infoln "Creating Org1 Identities"
-    createOrgWithN 1
-
-    while [ ! -f "organizations/fabric-ca/org2/tls-cert.pem" ]; do
-        sleep 1
+    for (( i=1; i<=$ORGANIZATION_NUMBER; i++ )); do
+      infoln "Creating Org${i} Identities"
+      createOrg $i
     done
 
-    infoln "Creating Org2 Identities"
-    createOrgWithN 2
+    # infoln "Creating Org1 Identities"
+    # createOrg 1
 
-    while [ ! -f "organizations/fabric-ca/org3/tls-cert.pem" ]; do
-        sleep 1
-    done
+    # infoln "Creating Org1 Identities"
+    # createOrg 2
 
-    infoln "Creating Org3 Identities"
-    createOrgWithN 3
-
-    while [ ! -f "organizations/fabric-ca/org4/tls-cert.pem" ]; do
-        sleep 1
-    done
-
-    infoln "Creating Org4 Identities"
-    createOrgWithN 4
-    
     infoln "Creating Orderer Org Identities"
     createOrderer
   fi
 
-  infoln "Generating CCP files for orgs"
-  ./organizations/ccp-generate.sh $ORGANIZATION_NUMBER $PEER_PER_ORGANIZATION_NUMBER
+  infoln "Generating CCP files for Org1 and Org2"
+  ./organizations/ccp-generate.sh
 }
 
 # Once you create the organization crypto material, you need to create the
@@ -208,7 +221,7 @@ function createOrgs() {
 
 # The configtxgen tool is used to create the genesis block. Configtxgen consumes a
 # "configtx.yaml" file that contains the definitions for the sample network. The
-# genesis block is defined using the "ProjectProfile" profile at the bottom
+# genesis block is defined using the "TwoOrgsOrdererGenesis" profile at the bottom
 # of the file. This profile defines a sample consortium, "SampleConsortium",
 # consisting of our two Peer Orgs. This consortium defines which organizations are
 # recognized as members of the network. The peer and ordering organizations are defined
@@ -240,7 +253,7 @@ function createConsortium() {
   # Note: For some unknown reason (at least for now) the block file can't be
   # named orderer.genesis.block or the orderer will fail to launch!
   set -x
-  configtxgen -profile ProjectProfile -channelID system-channel -outputBlock ./system-genesis-block/genesis.block
+  configtxgen -profile TwoOrgsOrdererGenesis -channelID system-channel -outputBlock ./system-genesis-block/genesis.block
   res=$?
   { set +x; } 2>/dev/null
   if [ $res -ne 0 ]; then
@@ -309,6 +322,7 @@ function deployCC() {
 function networkDown() {
   # stop org3 containers also in addition to org1 and org2, in case we were running sample to add org3
   docker compose -f $COMPOSE_FILE_BASE -f $COMPOSE_FILE_COUCH -f $COMPOSE_FILE_CA down --volumes --remove-orphans
+  #docker compose -f $COMPOSE_FILE_COUCH_ORG3 -f $COMPOSE_FILE_ORG3 down --volumes --remove-orphans
   # Don't remove the generated artifacts -- note, the ledgers are always removed
   if [ "$MODE" != "restart" ]; then
     # Bring down the network, deleting the volumes
@@ -319,10 +333,10 @@ function networkDown() {
     # remove orderer block and other channel configuration transactions and certs
     docker run --rm -v $(pwd):/data busybox sh -c 'cd /data && rm -rf system-genesis-block/*.block organizations/peerOrganizations organizations/ordererOrganizations'
     ## remove fabric ca artifacts
-    for ((i = 1; i <= $ORGANIZATION_NUMBER; i++)); do
-      docker run --rm -v $(pwd):/data busybox sh -c "cd /data && rm -rf organizations/fabric-ca/org$i/msp organizations/fabric-ca/org1/tls-cert.pem organizations/fabric-ca/org1/ca-cert.pem organizations/fabric-ca/org1/IssuerPublicKey organizations/fabric-ca/org1/IssuerRevocationPublicKey organizations/fabric-ca/org1/fabric-ca-server.db"
-    done
+    docker run --rm -v $(pwd):/data busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/org1/msp organizations/fabric-ca/org1/tls-cert.pem organizations/fabric-ca/org1/ca-cert.pem organizations/fabric-ca/org1/IssuerPublicKey organizations/fabric-ca/org1/IssuerRevocationPublicKey organizations/fabric-ca/org1/fabric-ca-server.db'
+    docker run --rm -v $(pwd):/data busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/org2/msp organizations/fabric-ca/org2/tls-cert.pem organizations/fabric-ca/org2/ca-cert.pem organizations/fabric-ca/org2/IssuerPublicKey organizations/fabric-ca/org2/IssuerRevocationPublicKey organizations/fabric-ca/org2/fabric-ca-server.db'
     docker run --rm -v $(pwd):/data busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/ordererOrg/msp organizations/fabric-ca/ordererOrg/tls-cert.pem organizations/fabric-ca/ordererOrg/ca-cert.pem organizations/fabric-ca/ordererOrg/IssuerPublicKey organizations/fabric-ca/ordererOrg/IssuerRevocationPublicKey organizations/fabric-ca/ordererOrg/fabric-ca-server.db'
+    docker run --rm -v $(pwd):/data busybox sh -c 'cd /data && rm -rf addOrg3/fabric-ca/org3/msp addOrg3/fabric-ca/org3/tls-cert.pem addOrg3/fabric-ca/org3/ca-cert.pem addOrg3/fabric-ca/org3/IssuerPublicKey addOrg3/fabric-ca/org3/IssuerRevocationPublicKey addOrg3/fabric-ca/org3/fabric-ca-server.db'
     # remove channel and script artifacts
     docker run --rm -v $(pwd):/data busybox sh -c 'cd /data && rm -rf channel-artifacts log.txt *.tar.gz'
   fi
@@ -356,6 +370,11 @@ COMPOSE_FILE_BASE=docker/docker-compose-test-net.yaml
 COMPOSE_FILE_COUCH=docker/docker-compose-couch.yaml
 # certificate authorities compose file
 COMPOSE_FILE_CA=docker/docker-compose-ca.yaml
+# use this as the docker compose couch file for org3
+COMPOSE_FILE_COUCH_ORG3=addOrg3/docker/docker-compose-couch-org3.yaml
+# use this as the default docker-compose yaml definition for org3
+COMPOSE_FILE_ORG3=addOrg3/docker/docker-compose-org3.yaml
+#
 # chaincode language defaults to "NA"
 CC_SRC_LANGUAGE="NA"
 # Chaincode version
@@ -367,7 +386,7 @@ IMAGETAG="latest"
 # default ca image tag
 CA_IMAGETAG="latest"
 # default database
-DATABASE="couchdb"
+DATABASE="leveldb"
 
 # Parse commandline args
 

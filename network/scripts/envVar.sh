@@ -11,13 +11,11 @@
 . scripts/utils.sh
 
 export CORE_PEER_TLS_ENABLED=true
-export ORGANIZATIONS_PATH=${PWD}/organizations
-
-export ORDERER_CA=${ORGANIZATIONS_PATH}/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-export PEER0_ORG1_CA=${ORGANIZATIONS_PATH}/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-export PEER0_ORG2_CA=${ORGANIZATIONS_PATH}/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
-export PEER0_ORG3_CA=${ORGANIZATIONS_PATH}/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
-export PEER0_ORG4_CA=${ORGANIZATIONS_PATH}/peerOrganizations/org4.example.com/peers/peer0.org4.example.com/tls/ca.crt
+export ORDERER_CA=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+export PEER0_ORG1_CA=${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+export PEER0_ORG2_CA=${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+export PEER0_ORG3_CA=${PWD}/organizations/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
+export PEER0_ORG4_CA=${PWD}/organizations/peerOrganizations/org4.example.com/peers/peer0.org4.example.com/tls/ca.crt
 
 # Set environment variables for the peer org
 setGlobals() {
@@ -27,11 +25,32 @@ setGlobals() {
   else
     USING_ORG="${OVERRIDE_ORG}"
   fi
+  
   infoln "Using organization ${USING_ORG}"
   export CORE_PEER_LOCALMSPID="Org${USING_ORG}MSP"
-  export CORE_PEER_TLS_ROOTCERT_FILE=${ORGANIZATIONS_PATH}/peerOrganizations/org${USING_ORG}.example.com/peers/peer0.org${USING_ORG}.example.com/tls/ca.crt
-  export CORE_PEER_MSPCONFIGPATH=${ORGANIZATIONS_PATH}/peerOrganizations/org${USING_ORG}.example.com/users/Admin@org${USING_ORG}.example.com/msp
-  export CORE_PEER_ADDRESS=localhost:$((6 + ${USING_ORG}))051
+  export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/org${USING_ORG}.example.com/peers/peer0.org${USING_ORG}.example.com/tls/ca.crt
+  export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org${USING_ORG}.example.com/users/Admin@org${USING_ORG}.example.com/msp
+  export CORE_PEER_ADDRESS="localhost:$((6 + $USING_ORG))051"
+
+  # if [ $USING_ORG -eq 1 ]; then
+  #   export CORE_PEER_LOCALMSPID="Org1MSP"
+  #   export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
+  #   export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+  #   export CORE_PEER_ADDRESS=localhost:7051
+  # elif [ $USING_ORG -eq 2 ]; then
+  #   export CORE_PEER_LOCALMSPID="Org2MSP"
+  #   export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG2_CA
+  #   export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+  #   export CORE_PEER_ADDRESS=localhost:9051
+
+  # elif [ $USING_ORG -eq 3 ]; then
+  #   export CORE_PEER_LOCALMSPID="Org3MSP"
+  #   export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG3_CA
+  #   export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp
+  #   export CORE_PEER_ADDRESS=localhost:11051
+  # else
+  #   errorln "ORG Unknown"
+  # fi
 
   if [ "$VERBOSE" == "true" ]; then
     env | grep CORE
@@ -48,9 +67,16 @@ setGlobalsCLI() {
   else
     USING_ORG="${OVERRIDE_ORG}"
   fi
-  export CORE_PEER_ADDRESS=peer0.org${USING_ORG}.example.com:$((6 + $USING_ORG))051
+  if [ $USING_ORG -eq 1 ]; then
+    export CORE_PEER_ADDRESS=peer0.org1.example.com:7051
+  elif [ $USING_ORG -eq 2 ]; then
+    export CORE_PEER_ADDRESS=peer0.org2.example.com:9051
+  elif [ $USING_ORG -eq 3 ]; then
+    export CORE_PEER_ADDRESS=peer0.org3.example.com:11051
+  else
+    errorln "ORG Unknown"
+  fi
 }
-
 
 # parsePeerConnectionParameters $@
 # Helper function that sets the peer connection parameters for a chaincode
