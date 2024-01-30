@@ -47,15 +47,16 @@ setGlobalsCLI() {
   else
     USING_ORG="${OVERRIDE_ORG}"
   fi
-  if [ $USING_ORG -eq 1 ]; then
-    export CORE_PEER_ADDRESS=peer0.org1.example.com:7051
-  elif [ $USING_ORG -eq 2 ]; then
-    export CORE_PEER_ADDRESS=peer0.org2.example.com:9051
-  elif [ $USING_ORG -eq 3 ]; then
-    export CORE_PEER_ADDRESS=peer0.org3.example.com:11051
-  else
-    errorln "ORG Unknown"
-  fi
+  # if [ $USING_ORG -eq 1 ]; then
+  #   export CORE_PEER_ADDRESS=peer0.org1.example.com:7051
+  # elif [ $USING_ORG -eq 2 ]; then
+  #   export CORE_PEER_ADDRESS=peer0.org2.example.com:9051
+  # elif [ $USING_ORG -eq 3 ]; then
+  #   export CORE_PEER_ADDRESS=peer0.org3.example.com:11051
+  # else
+  #   errorln "ORG Unknown"
+  # fi
+  export CORE_PEER_ADDRESS=peer0.org${USING_ORG}.example.com:$((6 + $USING_ORG))051
 }
 
 # parsePeerConnectionParameters $@
