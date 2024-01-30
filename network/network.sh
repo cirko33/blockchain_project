@@ -201,12 +201,6 @@ function createOrgs() {
       createOrg $i
     done
 
-    # infoln "Creating Org1 Identities"
-    # createOrg 1
-
-    # infoln "Creating Org1 Identities"
-    # createOrg 2
-
     infoln "Creating Orderer Org Identities"
     createOrderer
   fi

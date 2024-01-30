@@ -25,32 +25,12 @@ setGlobals() {
   else
     USING_ORG="${OVERRIDE_ORG}"
   fi
-  
+
   infoln "Using organization ${USING_ORG}"
   export CORE_PEER_LOCALMSPID="Org${USING_ORG}MSP"
   export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/org${USING_ORG}.example.com/peers/peer0.org${USING_ORG}.example.com/tls/ca.crt
   export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org${USING_ORG}.example.com/users/Admin@org${USING_ORG}.example.com/msp
   export CORE_PEER_ADDRESS="localhost:$((6 + $USING_ORG))051"
-
-  # if [ $USING_ORG -eq 1 ]; then
-  #   export CORE_PEER_LOCALMSPID="Org1MSP"
-  #   export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
-  #   export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
-  #   export CORE_PEER_ADDRESS=localhost:7051
-  # elif [ $USING_ORG -eq 2 ]; then
-  #   export CORE_PEER_LOCALMSPID="Org2MSP"
-  #   export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG2_CA
-  #   export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
-  #   export CORE_PEER_ADDRESS=localhost:9051
-
-  # elif [ $USING_ORG -eq 3 ]; then
-  #   export CORE_PEER_LOCALMSPID="Org3MSP"
-  #   export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG3_CA
-  #   export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp
-  #   export CORE_PEER_ADDRESS=localhost:11051
-  # else
-  #   errorln "ORG Unknown"
-  # fi
 
   if [ "$VERBOSE" == "true" ]; then
     env | grep CORE
