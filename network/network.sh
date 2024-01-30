@@ -18,6 +18,7 @@ export VERBOSE=false
 
 export CONFIG_PATH=${PWD}/config
 export ORGANIZATION_NUMBER=4
+export PEER_NUMBER=4
 
 
 . scripts/utils.sh
@@ -196,10 +197,15 @@ function createOrgs() {
       fi
     done
 
-    for (( i=1; i<=$ORGANIZATION_NUMBER; i++ )); do
-      infoln "Creating Org${i} Identities"
-      createOrg $i
-    done
+    # TO DO - WONT WORK
+    # for (( i=1; i<=$ORGANIZATION_NUMBER; i++ )); do
+    #   infoln "Creating Org${i} Identities"
+    #   createOrg $i
+    # done
+    createOrg 1
+    createOrg 2
+    createOrg 3
+    createOrg 4
 
     infoln "Creating Orderer Org Identities"
     createOrderer
