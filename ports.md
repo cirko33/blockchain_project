@@ -33,19 +33,19 @@
     - p3: 10066 & 10403
 
 ## CouchDB ports
-- CouchDB 10: 5984
-- CouchDB 11: 5985
-- CouchDB 12: 5986
-- CouchDB 13: 5987
-- CouchDB 20: 6984
-- CouchDB 21: 6985
-- CouchDB 22: 6986
-- CouchDB 23: 6987
-- CouchDB 30: 7984
-- CouchDB 31: 7985
-- CouchDB 32: 7986
-- CouchDB 33: 7987
-- CouchDB 40: 8984
-- CouchDB 41: 8985
-- CouchDB 42: 8986
-- CouchDB 43: 8987
+- CouchDB 10: 7984
+- CouchDB 11: 7985
+- CouchDB 12: 7986
+- CouchDB 13: 7987
+- CouchDB 20: 8984
+- CouchDB 21: 8985
+- CouchDB 22: 8986
+- CouchDB 23: 8987
+- CouchDB 30: 9984
+- CouchDB 31: 9985
+- CouchDB 32: 9986
+- CouchDB 33: 9987
+- CouchDB 40: 10984
+- CouchDB 41: 10985
+- CouchDB 42: 10986
+- CouchDB 43: 10987

@@ -29,6 +29,7 @@ def make_peers(port1, port2, orgs, peers):
       - test
 
 volumes:
+  orderer.example.com:
 {1}
   """
 
@@ -75,6 +76,8 @@ services:
     ports:
       - {2}:{2}
       - {4}:{4}
+    networks:
+      - test
   """
   volumes = ""
 
@@ -107,12 +110,16 @@ services:
     container_name: couchdb{0}{1}
     ports:
       - "{2}:5984"
+    networks:
+      - test
 
   peer{0}.org{1}.example.com:
     environment:
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb{0}{1}:5984
     depends_on:
       - couchdb{0}{1}
+    networks:
+      - test
 """
   text = ""
   for i in range(0, peers):
@@ -188,6 +195,6 @@ if __name__ == "__main__":
   couch = make_couch(couch_port, orgs, peers)
   ca = make_ca(ca_port, orgs)
 
-  print(peer, file=open("network/docker/docker-compose-test-net.yaml", "w"))
-  print(couch, file=open("network/docker/docker-compose-couch.yaml", "w"))
-  print(ca, file=open("network/docker/docker-compose-ca.yaml", "w"))
+  print(peer, file=open("docker/docker-compose-test-net.yaml", "w"))
+  print(couch, file=open("docker/docker-compose-couch.yaml", "w"))
+  print(ca, file=open("docker/docker-compose-ca.yaml", "w"))

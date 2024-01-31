@@ -197,15 +197,10 @@ function createOrgs() {
       fi
     done
 
-    # TO DO - WONT WORK
-    # for (( i=1; i<=$ORGANIZATION_NUMBER; i++ )); do
-    #   infoln "Creating Org${i} Identities"
-    #   createOrg $i
-    # done
-    createOrg 1
-    createOrg 2
-    createOrg 3
-    createOrg 4
+    for (( j=1; j<=$ORGANIZATION_NUMBER; j++ )); do
+      infoln "Creating Org${j} Identities"
+      createOrg $j
+    done
 
     infoln "Creating Orderer Org Identities"
     createOrderer
@@ -269,6 +264,7 @@ function createConsortium() {
 
 # Bring up the peer and orderer nodes using docker compose.
 function networkUp() {
+  python3 ./make_docker_files.py $ORGANIZATION_NUMBER $PEER_NUMBER
   checkPrereqs
   # generate artifacts if they don't exist
   if [ ! -d "organizations/peerOrganizations" ]; then
@@ -395,7 +391,7 @@ IMAGETAG="latest"
 # default ca image tag
 CA_IMAGETAG="latest"
 # default database
-DATABASE="leveldb"
+DATABASE="couchdb"
 
 # Parse commandline args
 
