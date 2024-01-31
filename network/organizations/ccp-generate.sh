@@ -29,7 +29,7 @@ function yaml_ccp {
 for (( i=1; i<=$1; i++ )); do
     ORG=$i
     P0PORT="$(($i * 1000 + 6051))"
-    CAPORT=$(($i * 1000 + 6054))"
+    CAPORT="$(($i * 1000 + 6054))"
     PEERPEM=organizations/peerOrganizations/org${i}.example.com/tlsca/tlsca.org${i}.example.com-cert.pem
     CAPEM=organizations/peerOrganizations/org${i}.example.com/ca/ca.org${i}.example.com-cert.pem
 
