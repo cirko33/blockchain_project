@@ -206,8 +206,8 @@ function createOrgs() {
     createOrderer
   fi
 
-  infoln "Generating CCP files for Org1 and Org2"
-  ./organizations/ccp-generate.sh
+  infoln "Generating CCP files for orgs"
+  ./organizations/ccp-generate.sh $ORGANIZATION_NUMBER
 }
 
 # Once you create the organization crypto material, you need to create the
