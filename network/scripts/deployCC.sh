@@ -121,30 +121,34 @@ packageChaincode() {
 
 # installChaincode PEER ORG
 installChaincode() {
-  infoln "Install chaincode on peer0.org${i}..."
   ORG=$1
-  setGlobals $ORG
-  set -x
-  peer lifecycle chaincode install ${CC_NAME}.tar.gz >&log.txt
-  res=$?
-  { set +x; } 2>/dev/null
-  cat log.txt
-  verifyResult $res "Chaincode installation on peer0.org${ORG} has failed"
-  successln "Chaincode is installed on peer0.org${ORG}"
+  for (( j=0; j<($PEER_NUMBER); j++ )); do
+    infoln "Install chaincode on peer${j}.org${ORG}..."
+    setGlobals $ORG $j
+    set -x
+    peer lifecycle chaincode install ${CC_NAME}.tar.gz >&log.txt
+    res=$?
+    { set +x; } 2>/dev/null
+    cat log.txt
+    verifyResult $res "Chaincode installation on peer${j}.org${ORG} has failed"
+    successln "Chaincode is installed on peer${j}.org${ORG}"
+  done
 }
 
 # queryInstalled PEER ORG
 queryInstalled() {
   ORG=$1
-  setGlobals $ORG
-  set -x
-  peer lifecycle chaincode queryinstalled >&log.txt
-  res=$?
-  { set +x; } 2>/dev/null
-  cat log.txt
-  PACKAGE_ID=$(sed -n "/${CC_NAME}_${CC_VERSION}/{s/^Package ID: //; s/, Label:.*$//; p;}" log.txt)
-  verifyResult $res "Query installed on peer0.org${ORG} has failed"
-  successln "Query installed successful on peer0.org${ORG} on channel"
+  for (( j=0; j<($PEER_NUMBER); j++ )); do
+    setGlobals $ORG $j
+    set -x
+    peer lifecycle chaincode queryinstalled >&log.txt
+    res=$?
+    { set +x; } 2>/dev/null
+    cat log.txt
+    PACKAGE_ID=$(sed -n "/${CC_NAME}_${CC_VERSION}/{s/^Package ID: //; s/, Label:.*$//; p;}" log.txt)
+    verifyResult $res "Query installed on peer${j}.org${ORG} has failed"
+    successln "Query installed successful on peer${j}.org${ORG} on channel"
+  done
 }
 
 # approveForMyOrg VERSION PEER ORG
@@ -212,30 +216,32 @@ commitChaincodeDefinition() {
 # queryCommitted ORG
 queryCommitted() {
   ORG=$1
-  setGlobals $ORG
-  EXPECTED_RESULT="Version: ${CC_VERSION}, Sequence: ${CC_SEQUENCE}, Endorsement Plugin: escc, Validation Plugin: vscc"
-  infoln "Querying chaincode definition on peer0.org${ORG} on channel '$CHANNEL_NAME'..."
-  local rc=1
-  local COUNTER=1
-  # continue to poll
-  # we either get a successful response, or reach MAX RETRY
-  while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ]; do
-    sleep $DELAY
-    infoln "Attempting to Query committed status on peer0.org${ORG}, Retry after $DELAY seconds."
-    set -x
-    peer lifecycle chaincode querycommitted --channelID $CHANNEL_NAME --name ${CC_NAME} >&log.txt
-    res=$?
-    { set +x; } 2>/dev/null
-    test $res -eq 0 && VALUE=$(cat log.txt | grep -o '^Version: '$CC_VERSION', Sequence: [0-9]*, Endorsement Plugin: escc, Validation Plugin: vscc')
-    test "$VALUE" = "$EXPECTED_RESULT" && let rc=0
-    COUNTER=$(expr $COUNTER + 1)
+  for (( j=0; j<($PEER_NUMBER); j++ )); do
+    setGlobals $ORG $j
+    EXPECTED_RESULT="Version: ${CC_VERSION}, Sequence: ${CC_SEQUENCE}, Endorsement Plugin: escc, Validation Plugin: vscc"
+    infoln "Querying chaincode definition on peer${j}.org${ORG} on channel '$CHANNEL_NAME'..."
+    local rc=1
+    local COUNTER=1
+    # continue to poll
+    # we either get a successful response, or reach MAX RETRY
+    while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ]; do
+      sleep $DELAY
+      infoln "Attempting to Query committed status on peer${j}.org${ORG}, Retry after $DELAY seconds."
+      set -x
+      peer lifecycle chaincode querycommitted --channelID $CHANNEL_NAME --name ${CC_NAME} >&log.txt
+      res=$?
+      { set +x; } 2>/dev/null
+      test $res -eq 0 && VALUE=$(cat log.txt | grep -o '^Version: '$CC_VERSION', Sequence: [0-9]*, Endorsement Plugin: escc, Validation Plugin: vscc')
+      test "$VALUE" = "$EXPECTED_RESULT" && let rc=0
+      COUNTER=$(expr $COUNTER + 1)
+    done
+    cat log.txt
+    if test $rc -eq 0; then
+      successln "Query chaincode definition successful on peer${j}.org${ORG} on channel '$CHANNEL_NAME'"
+    else
+      fatalln "After $MAX_RETRY attempts, Query chaincode definition result on peer${j}.org${ORG} is INVALID!"
+    fi
   done
-  cat log.txt
-  if test $rc -eq 0; then
-    successln "Query chaincode definition successful on peer0.org${ORG} on channel '$CHANNEL_NAME'"
-  else
-    fatalln "After $MAX_RETRY attempts, Query chaincode definition result on peer0.org${ORG} is INVALID!"
-  fi
 }
 
 chaincodeInvokeInit() {
@@ -290,8 +296,6 @@ packageChaincode
 for (( i=1; i<=$ORGANIZATION_NUMBER; i++ )); do
   installChaincode $i
 done
-
-## query whether the chaincode is installed
 
 ## approve the definition for orgs
 orgs=""

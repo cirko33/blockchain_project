@@ -47,26 +47,28 @@ createChannel() {
 joinChannel() {
   FABRIC_CFG_PATH=$CONFIG_PATH
   ORG=$1
-  setGlobals $ORG
-	local rc=1
-	local COUNTER=1
-	## Sometimes Join takes time, hence retry
-	while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
-    sleep $DELAY
-    set -x
-    peer channel join -b $BLOCKFILE >&log.txt
-    res=$?
-    { set +x; } 2>/dev/null
-		let rc=$res
-		COUNTER=$(expr $COUNTER + 1)
+  for (( j=0; j<($PEER_NUMBER); j++ )); do
+    setGlobals $ORG $j
+    local rc=1
+    local COUNTER=1
+    ## Sometimes Join takes time, hence retry
+    while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
+      sleep $DELAY
+      set -x
+      peer channel join -b $BLOCKFILE >&log.txt
+      res=$?
+      { set +x; } 2>/dev/null
+      let rc=$res
+      COUNTER=$(expr $COUNTER + 1)
+    done
+    cat log.txt
+    verifyResult $res "After $MAX_RETRY attempts, peer${j}.org${ORG} has failed to join channel '$CHANNEL_NAME' "
 	done
-	cat log.txt
-	verifyResult $res "After $MAX_RETRY attempts, peer0.org${ORG} has failed to join channel '$CHANNEL_NAME' "
 }
 
 setAnchorPeer() {
   ORG=$1
-  docker exec cli ./scripts/setAnchorPeer.sh $ORG $CHANNEL_NAME 
+  docker exec cli ./scripts/setAnchorPeer.sh $ORG $CHANNEL_NAME $PEER_NUMBER
 }
 
 FABRIC_CFG_PATH=${PWD}/configtx
@@ -85,22 +87,14 @@ successln "Channel '$CHANNEL_NAME' created"
 
 ## Join all the peers to the channel
 for (( i=1; i<=$ORGANIZATION_NUMBER; i++ )); do
-  infoln "Joining org$i peer to the channel..."
+  infoln "Joining org$i peers to the channel..."
   joinChannel $i
 done
-# infoln "Joining org1 peer to the channel..."
-# joinChannel 1
-# infoln "Joining org2 peer to the channel..."
-# joinChannel 2
 
 ## Set the anchor peers for each org in the channel
 for (( i=1; i<=$ORGANIZATION_NUMBER; i++ )); do
   infoln "Setting anchor peer for org$i..."
   setAnchorPeer $i
 done
-# infoln "Setting anchor peer for org1..."
-# setAnchorPeer 1
-# infoln "Setting anchor peer for org2..."
-# setAnchorPeer 2
 
 successln "Channel '$CHANNEL_NAME' joined"
