@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
+	"github.com/hyperledger/fabric-samples/asset-transfer-basic/chaincode-go/chaincode/models"
 )
 
 // SmartContract provides functions for managing an Asset
@@ -23,28 +24,70 @@ type Asset struct {
 
 // InitLedger adds a base set of assets to the ledger
 func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
-	assets := []Asset{
-		{ID: "asset1", Color: "blue", Size: 5, Owner: "Tomoko", AppraisedValue: 300},
-		{ID: "asset2", Color: "red", Size: 5, Owner: "Brad", AppraisedValue: 400},
-		{ID: "asset3", Color: "green", Size: 10, Owner: "Jin Soo", AppraisedValue: 500},
-		{ID: "asset4", Color: "yellow", Size: 10, Owner: "Max", AppraisedValue: 600},
-		{ID: "asset5", Color: "black", Size: 15, Owner: "Adriana", AppraisedValue: 700},
-		{ID: "asset6", Color: "white", Size: 15, Owner: "Michel", AppraisedValue: 800},
+	// assets := []Asset{
+	// 	{ID: "asset1", Color: "blue", Size: 5, Owner: "Tomoko", AppraisedValue: 300},
+	// 	{ID: "asset2", Color: "red", Size: 5, Owner: "Brad", AppraisedValue: 400},
+	// 	{ID: "asset3", Color: "green", Size: 10, Owner: "Jin Soo", AppraisedValue: 500},
+	// 	{ID: "asset4", Color: "yellow", Size: 10, Owner: "Max", AppraisedValue: 600},
+	// 	{ID: "asset5", Color: "black", Size: 15, Owner: "Adriana", AppraisedValue: 700},
+	// 	{ID: "asset6", Color: "white", Size: 15, Owner: "Michel", AppraisedValue: 800},
+	// }
+
+	// for _, asset := range assets {
+	// 	assetJSON, err := json.Marshal(asset)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+
+	// 	err = ctx.GetStub().PutState(asset.ID, assetJSON)
+	// 	if err != nil {
+	// 		return fmt.Errorf("failed to put to world state. %v", err)
+	// 	}
+	// }
+
+	persons := []models.Person{
+		{Id: "person1", Name: "Tomoko", LastName: "Hill", Email: "tomoko@gmail.com"},
+		{Id: "person2", Name: "Brad", LastName: "Doe", Email: "brad@gmail.com"},
 	}
 
-	for _, asset := range assets {
-		assetJSON, err := json.Marshal(asset)
+	for _, person := range persons {
+		personJSON, err := json.Marshal(person)
 		if err != nil {
 			return err
 		}
 
-		err = ctx.GetStub().PutState(asset.ID, assetJSON)
+		err = ctx.GetStub().PutState(person.Id, personJSON)
 		if err != nil {
 			return fmt.Errorf("failed to put to world state. %v", err)
 		}
 	}
 
 	return nil
+}
+
+func (*SmartContract) GetAllPersons(ctx contractapi.TransactionContextInterface) ([]*models.Person, error) {
+	resultsIterator, err := ctx.GetStub().GetStateByRange("", "")
+	if err != nil {
+		return nil, err
+	}
+
+	defer resultsIterator.Close()
+	var persons []*models.Person
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+		if err != nil {
+			return nil, err
+		}
+
+		var person models.Person
+		err = json.Unmarshal(queryResponse.Value, &person)
+		if err != nil {
+			return nil, err
+		}
+		persons = append(persons, &person)
+	}
+
+	return persons, nil
 }
 
 // CreateAsset issues a new asset to the world state with given details.
