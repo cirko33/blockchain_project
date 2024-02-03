@@ -19,7 +19,7 @@ fi
 
 createChannelTx() {
 	set -x
-	configtxgen -profile ProjectChannel1 -outputCreateChannelTx ./channel-artifacts/${CHANNEL_NAME}.tx -channelID $CHANNEL_NAME
+	configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/${CHANNEL_NAME}.tx -channelID $CHANNEL_NAME
 	res=$?
 	{ set +x; } 2>/dev/null
   verifyResult $res "Failed to generate channel configuration transaction..."
@@ -45,28 +45,30 @@ createChannel() {
 
 # joinChannel ORG
 joinChannel() {
-  FABRIC_CFG_PATH=$PWD/config/
+  FABRIC_CFG_PATH=$CONFIG_PATH
   ORG=$1
-  setGlobals $ORG
-	local rc=1
-	local COUNTER=1
-	## Sometimes Join takes time, hence retry
-	while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
-    sleep $DELAY
-    set -x
-    peer channel join -b $BLOCKFILE >&log.txt
-    res=$?
-    { set +x; } 2>/dev/null
-		let rc=$res
-		COUNTER=$(expr $COUNTER + 1)
+  for (( j=0; j<($PEER_NUMBER); j++ )); do
+    setGlobals $ORG $j
+    local rc=1
+    local COUNTER=1
+    ## Sometimes Join takes time, hence retry
+    while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
+      sleep $DELAY
+      set -x
+      peer channel join -b $BLOCKFILE >&log.txt
+      res=$?
+      { set +x; } 2>/dev/null
+      let rc=$res
+      COUNTER=$(expr $COUNTER + 1)
+    done
+    cat log.txt
+    verifyResult $res "After $MAX_RETRY attempts, peer${j}.org${ORG} has failed to join channel '$CHANNEL_NAME' "
 	done
-	cat log.txt
-	verifyResult $res "After $MAX_RETRY attempts, peer0.org${ORG} has failed to join channel '$CHANNEL_NAME' "
 }
 
 setAnchorPeer() {
   ORG=$1
-  docker exec cli ./scripts/setAnchorPeer.sh $ORG $CHANNEL_NAME 
+  docker exec cli ./scripts/setAnchorPeer.sh $ORG $CHANNEL_NAME $PEER_NUMBER
 }
 
 FABRIC_CFG_PATH=${PWD}/configtx
@@ -75,7 +77,7 @@ FABRIC_CFG_PATH=${PWD}/configtx
 infoln "Generating channel create transaction '${CHANNEL_NAME}.tx'"
 createChannelTx
 
-FABRIC_CFG_PATH=$PWD/config/
+FABRIC_CFG_PATH=$CONFIG_PATH
 BLOCKFILE="./channel-artifacts/${CHANNEL_NAME}.block"
 
 ## Create channel
@@ -84,15 +86,15 @@ createChannel
 successln "Channel '$CHANNEL_NAME' created"
 
 ## Join all the peers to the channel
-for ((i = 1; i <= $ORGANIZATION_NUMBER; i++)) do
-	infoln "Joining org$i peer to the channel..."
-	joinChannel $i
+for (( i=1; i<=$ORGANIZATION_NUMBER; i++ )); do
+  infoln "Joining org$i peers to the channel..."
+  joinChannel $i
 done
 
 ## Set the anchor peers for each org in the channel
-for ((i = 1; i <= $ORGANIZATION_NUMBER; i++)) do
-	infoln "Setting anchor peer for org$i..."
-	setAnchorPeer $i
+for (( i=1; i<=$ORGANIZATION_NUMBER; i++ )); do
+  infoln "Setting anchor peer for org$i..."
+  setAnchorPeer $i
 done
 
 successln "Channel '$CHANNEL_NAME' joined"

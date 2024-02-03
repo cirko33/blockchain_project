@@ -17,8 +17,8 @@ createAnchorPeerUpdate() {
 
   infoln "Generating anchor peer update transaction for Org${ORG} on channel $CHANNEL_NAME"
 
-  HOST="peer0.org${ORG}.example.com"
-  PORT=$((6 + ${ORG}))051
+  HOST="peer${1}.org${ORG}.example.com"
+  PORT=$((6051 + $ORG * 1000 + $1 * 5))
 
   set -x
   # Modify the configuration to append the anchor peer 
@@ -41,8 +41,12 @@ updateAnchorPeer() {
 
 ORG=$1
 CHANNEL_NAME=$2
-setGlobalsCLI $ORG
+PEER_NUMBER=$3
 
-createAnchorPeerUpdate 
+for (( j=0; j<($PEER_NUMBER); j++ )); do
+  setGlobalsCLI $ORG $j
 
-updateAnchorPeer 
+  createAnchorPeerUpdate $j
+
+  updateAnchorPeer $j
+done

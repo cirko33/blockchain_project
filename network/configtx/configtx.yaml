@@ -152,7 +152,6 @@ Organizations:
                 Type: Signature
                 Rule: "OR('Org4MSP.peer')"
 
-
 ################################################################################
 #
 #   SECTION: Capabilities
@@ -356,7 +355,7 @@ Channel: &ChannelDefaults
 ################################################################################
 Profiles:
 
-    ProjectProfile:
+    TwoOrgsOrdererGenesis:
         <<: *ChannelDefaults
         Orderer:
             <<: *OrdererDefaults
@@ -371,7 +370,7 @@ Profiles:
                     - *Org2
                     - *Org3
                     - *Org4
-    ProjectChannel1:
+    TwoOrgsChannel:
         Consortium: SampleConsortium
         <<: *ChannelDefaults
         Application:
