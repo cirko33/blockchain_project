@@ -9,24 +9,24 @@ import (
 )
 
 // Create bank account
-func (s *SmartContract) CreateBankAccount(ctx contractapi.TransactionContextInterface, id int64, personId, currency string, balance float64) (*BankAccount, error) {
+func (s *SmartContract) CreateBankAccount(ctx contractapi.TransactionContextInterface, id int64, cardNumber, currency string, balance float64) (*BankAccount, error) {
 	var bankAccount BankAccount
-	result, err := s.GetEntityById(ctx, "bankAccount", id)
+	bankAccountBytes, err := s.GetEntityById(ctx, "bankAccount", id)
 
 	if err != nil {
 		return nil, err
 	}
-	if result != nil && bankAccount.PersonId == personId {
-		err = json.Unmarshal(result.([]byte), &bankAccount)
+	if bankAccountBytes != nil{
+		err = json.Unmarshal(bankAccountBytes, &bankAccount)
 		if err != nil {
-			return nil, fmt.Errorf("failed to unmarshal bank account: %v", err)
+			return nil, fmt.Errorf("Failed to unmarshal bank account: %v", err)
 		}
 		if bankAccount.PersonId == personId {
 			return nil, fmt.Errorf("The person with id %s already has an bank account with id %s", personId, bankAccount.Id)
 		}
 	}
 
-	accountId := "bankAccount" + "-" + strconv.FormatInt(id, 10)
+	accountId := toBankAccountId(id)
 	account := BankAccount{
 		Id:       accountId,
 		PersonId: personId,

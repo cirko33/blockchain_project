@@ -8,10 +8,10 @@ import (
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
-func (s *SmartContract) GetEntityById(ctx contractapi.TransactionContextInterface, entityName string, id int64) (interface{}, error) {
-	entity, err := ctx.GetStub().GetState(entityName + "-" + strconv.FormatInt(id, 10))
+func (s *SmartContract) GetEntityById(ctx contractapi.TransactionContextInterface, entityName string, id int64) ([]byte, error) {
+	entity, err := ctx.GetStub().GetState(fmt.Sprintf("%s-%d", entityName, id))
 	if err != nil {
-		return false, fmt.Errorf("Failed to read item (%s) with id (%s) from world state: %v", entityName, id, err)
+		return false, fmt.Errorf("Failed to read entity (%s) with id (%s) from world state: %v", entityName, id, err)
 	}
 
 	return entity, nil
@@ -27,6 +27,10 @@ func toPersonId(intId int64) string {
 
 func toBankAccountId(intId int64) string {
 	return fmt.Sprintf("%s-%d", BANK_ACCOUNT_TYPE_NAME, intId)
+}
+
+func toCardId(intId int64) string {
+	return fmt.Sprintf("%s-%d", CARD_TYPE_NAME, intId)
 }
 
 func buildMockBanks(count int64) []Bank {
