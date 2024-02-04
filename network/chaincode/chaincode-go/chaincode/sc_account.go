@@ -9,7 +9,7 @@ import (
 )
 
 // Create bank account
-func (s *SmartContract) CreateBankAccount(ctx contractapi.TransactionContextInterface, id int64, cardNumber, currency string, balance float64) (*BankAccount, error) {
+func (s *SmartContract) CreateBankAccount(ctx contractapi.TransactionContextInterface, id int64, personId, currency string, balance float64) (*BankAccount, error) {
 	var bankAccount BankAccount
 	bankAccountBytes, err := s.GetEntityById(ctx, "bankAccount", id)
 
