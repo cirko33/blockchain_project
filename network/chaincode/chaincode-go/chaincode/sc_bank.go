@@ -30,3 +30,15 @@ func (s *SmartContract) GetAllBanks(ctx contractapi.TransactionContextInterface)
 
 	return banks, nil
 }
+
+// func (s *SmartContract) CreateBank(ctx contractapi.TransactionContextInterface, id int64, location string, pib string) error {
+// 	result, err := s.GetEntityById(ctx, BANK_TYPE_NAME, id)
+// }
+
+// func (s *SmartContract) DeleteBank(ctx contractapi.TransactionContextInterface, id string) error {
+// 	// todo
+// }
+
+// func (s *SmartContract) GetBank(ctx contractapi.TransactionContextInterface, id string) error {
+// 	// todo
+// }

@@ -229,12 +229,3 @@ func (s *SmartContract) DepositFunds(ctx contractapi.TransactionContextInterface
 
 	return nil
 }
-
-func (s *SmartContract) GetEntityById(ctx contractapi.TransactionContextInterface, entityName string, id int64) (interface{}, error) {
-	entity, err := ctx.GetStub().GetState(entityName + "-" + strconv.FormatInt(id, 10))
-	if err != nil {
-		return false, fmt.Errorf("Failed to read item (%s) with id (%s) from world state: %v", entityName, id, err)
-	}
-
-	return entity, nil
-}

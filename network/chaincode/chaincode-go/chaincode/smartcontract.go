@@ -8,7 +8,7 @@ import (
 )
 
 func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
-	banks := buildMockBanks(1)
+	banks := buildMockBanks(4)
 
 	for _, bank := range banks {
 		bankJSON, err := json.Marshal(bank)
