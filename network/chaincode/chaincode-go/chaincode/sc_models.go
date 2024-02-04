@@ -9,18 +9,18 @@ type SmartContract struct {
 }
 
 type Bank struct {
-	Id       string   `json:"id"`
-	Location string   `json:"location"`
-	PIB      string   `json:"pib"`
-	Persons  []Person `json:"persons"`
+	Id       string        `json:"id"`
+	Location string        `json:"location"`
+	PIB      string        `json:"pib"`
+	Persons  []Person      `json:"persons"`
+	Accounts []BankAccount `json:"accounts"`
 }
 
 type Person struct {
-	Id       string        `json:"id"`
-	Name     string        `json:"name"`
-	Surname  string        `json:"surname"`
-	Email    string        `json:"email"`
-	Accounts []BankAccount `json:"accounts"`
+	Id      string `json:"id"`
+	Name    string `json:"name"`
+	Surname string `json:"surname"`
+	Email   string `json:"email"`
 }
 
 type BankAccount struct {
