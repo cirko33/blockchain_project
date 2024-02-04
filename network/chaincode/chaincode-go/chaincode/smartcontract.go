@@ -32,7 +32,7 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 	// 	}
 	// }
 
-	persons := []models.Person{
+	persons := []Person{
 		{Id: "person1", Name: "Tomoko", LastName: "Hill", Email: "tomoko@gmail.com"},
 		{Id: "person2", Name: "Brad", LastName: "Doe", Email: "brad@gmail.com"},
 	}
@@ -52,21 +52,21 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 	return nil
 }
 
-func (*SmartContract) GetAllPersons(ctx contractapi.TransactionContextInterface) ([]*models.Person, error) {
+func (*SmartContract) GetAllPersons(ctx contractapi.TransactionContextInterface) ([]*Person, error) {
 	resultsIterator, err := ctx.GetStub().GetStateByRange("", "")
 	if err != nil {
 		return nil, err
 	}
 
 	defer resultsIterator.Close()
-	var persons []*models.Person
+	var persons []*Person
 	for resultsIterator.HasNext() {
 		queryResponse, err := resultsIterator.Next()
 		if err != nil {
 			return nil, err
 		}
 
-		var person models.Person
+		var person Person
 		err = json.Unmarshal(queryResponse.Value, &person)
 		if err != nil {
 			return nil, err

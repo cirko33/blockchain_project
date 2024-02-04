@@ -18,6 +18,15 @@ type Asset struct {
 	AppraisedValue int    `json:"appraisedValue"`
 }
 
+type Person struct {
+	Id       string `json:"id"`
+	Name     string `json:"name"`
+	LastName string `json:"lastName"`
+	Email    string `json:"email"`
+	//BankAccounts map[string]BankAccount `json:"bankAccounts"`
+}
+
+
 type BankAccount struct {
 	Id        string   `json:"id"`
 	PersonId  string   `json:"personId"`

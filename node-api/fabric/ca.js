@@ -1,11 +1,8 @@
 const dotenv = require("dotenv");
 const FabricCAServices = require("fabric-ca-client");
-const { User } = require("fabric-common");
-const { Wallet } = require("fabric-network");
 const path = require("path");
 
-// Initialize dotenv configuration
-dotenv.config({ path: path.resolve("environments", "ledger.env") });
+dotenv.config({ path: path.resolve("env", "development.env") });
 const env = process.env;
 
 const adminUserId = env["CA_ADMIN_USER"] || "admin";

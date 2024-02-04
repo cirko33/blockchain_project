@@ -4,8 +4,8 @@
   "description": "node api",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=development node ./app.js",
-    "start:dev": "cross-env NODE_ENV=development nodemon ./app.js",
+    "start": "cross-env NODE_ENV=development node ./server.js",
+    "start:dev": "cross-env NODE_ENV=development nodemon ./server.js",
     "lint": "eslint **/*.js",
     "swagger-autogen": "node ./docs/swagger.js",
     "lint:fix": "eslint --fix **/*.js"

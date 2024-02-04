@@ -12,7 +12,7 @@ app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
 
-const bankAccountRoutes = require("./routes/main");
+const bankAccountRoutes = require("./routes/bankAccount");
 
 app.use(bankAccountRoutes);
 app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerFile));
@@ -25,7 +25,4 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: err.message });
 });
 
-// module.exports = app;
-app.listen(3000, () => {
-  console.log("Server running. Use our API on port: 3000");
-});
+module.exports = app;

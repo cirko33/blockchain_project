@@ -1,10 +1,9 @@
-const { Client } = require("fabric-common");
-const { Wallet, Wallets } = require("fabric-network");
+const { Wallets } = require("fabric-network");
 const fs = require("fs");
 const path = require("path");
 const dotenv = require("dotenv");
 
-dotenv.config({ path: path.resolve(__dirname, "env", ".env") });
+dotenv.config({ path: path.resolve(__dirname, "env", "development.env") });
 
 const buildCCPOrg = (n) => {
   const organizationsPath =
@@ -19,7 +18,7 @@ const buildCCPOrg = (n) => {
 
   const fileExists = fs.existsSync(ccpPath);
   if (!fileExists) {
-    throw new Error(`no such file or directory: ${ccpPath}`);
+    throw new Error(`No such file or directory: ${ccpPath}`);
   }
   const contents = fs.readFileSync(ccpPath, "utf8");
 
@@ -42,12 +41,4 @@ const buildWallet = async (walletPath) => {
   return wallet;
 };
 
-const prettyJSONString = (inputString) => {
-  if (inputString) {
-    return JSON.stringify(JSON.parse(inputString), null, 2);
-  } else {
-    return inputString;
-  }
-};
-
-module.exports = { buildCCPOrg, buildWallet, prettyJSONString };
+module.exports = { buildCCPOrg, buildWallet };

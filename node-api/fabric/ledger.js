@@ -1,13 +1,10 @@
-// Convert ESM imports to CommonJS requires
 const dotenv = require("dotenv");
 const { Gateway } = require("fabric-network");
-const Contract = require("fabric-network/lib/contract");
-const Network = require("fabric-network/lib/network");
 const path = require("path");
 const { buildCAClient, registerAndEnrollUser, enrollAdmin } = require("./ca");
 const { buildCCPOrg, buildWallet } = require("./org");
 
-dotenv.config({ path: path.resolve("env", ".env") });
+dotenv.config({ path: path.resolve("env", "development.env") });
 const env = process.env;
 
 const channelName = env["CHANNEL_NAME"] || "mychannel";
@@ -48,10 +45,10 @@ const getGateway = async () => {
         discovery: { enabled: true, asLocalhost: true },
       });
     } catch (error) {
-      console.error(`******** FAILED to connect: ${error}`);
+      console.error(`Failed to connect: ${error}`);
     }
   } catch (error) {
-    console.error(`******** FAILED to run the application: ${error}`);
+    console.error(`Failed to run the application: ${error}`);
   }
 
   return gateway;
@@ -65,7 +62,7 @@ const getNetwork = async () => {
   try {
     network = await (await getGateway()).getNetwork(channelName);
   } catch (error) {
-    console.error(`********* Failed to get network: ${error}`);
+    console.error(`Failed to get network: ${error}`);
   }
 
   return network;
@@ -79,7 +76,7 @@ const getContract = async () => {
   try {
     contract = await (await getNetwork()).getContract(chaincodeName);
   } catch (error) {
-    console.error(`********* Failed to get contract: ${error}`);
+    console.error(`Failed to get contract: ${error}`);
   }
 
   return contract;
