@@ -4,37 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"chaincode-go/chaincode/models"
-
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
-// InitLedger adds a base set of assets to the ledger
 func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
-	// assets := []Asset{
-	// 	{ID: "asset1", Color: "blue", Size: 5, Owner: "Tomoko", AppraisedValue: 300},
-	// 	{ID: "asset2", Color: "red", Size: 5, Owner: "Brad", AppraisedValue: 400},
-	// 	{ID: "asset3", Color: "green", Size: 10, Owner: "Jin Soo", AppraisedValue: 500},
-	// 	{ID: "asset4", Color: "yellow", Size: 10, Owner: "Max", AppraisedValue: 600},
-	// 	{ID: "asset5", Color: "black", Size: 15, Owner: "Adriana", AppraisedValue: 700},
-	// 	{ID: "asset6", Color: "white", Size: 15, Owner: "Michel", AppraisedValue: 800},
-	// }
-
-	// for _, asset := range assets {
-	// 	assetJSON, err := json.Marshal(asset)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-
-	// 	err = ctx.GetStub().PutState(asset.ID, assetJSON)
-	// 	if err != nil {
-	// 		return fmt.Errorf("failed to put to world state. %v", err)
-	// 	}
-	// }
-
+	banks := []Bank {
+		{
+			Id: "",
+		}
+	}
 	persons := []Person{
-		{Id: "person1", Name: "Tomoko", LastName: "Hill", Email: "tomoko@gmail.com"},
-		{Id: "person2", Name: "Brad", LastName: "Doe", Email: "brad@gmail.com"},
+		{Id: "1", Name: "Pero", Surname: "Nikic", Email: "pero.nikic@gmail.com"},
 	}
 
 	for _, person := range persons {
@@ -77,7 +57,6 @@ func (*SmartContract) GetAllPersons(ctx contractapi.TransactionContextInterface)
 	return persons, nil
 }
 
-// CreateAsset issues a new asset to the world state with given details.
 func (s *SmartContract) CreateAsset(ctx contractapi.TransactionContextInterface, id string, color string, size int, owner string, appraisedValue int) error {
 	exists, err := s.AssetExists(ctx, id)
 	if err != nil {
@@ -102,7 +81,6 @@ func (s *SmartContract) CreateAsset(ctx contractapi.TransactionContextInterface,
 	return ctx.GetStub().PutState(id, assetJSON)
 }
 
-// ReadAsset returns the asset stored in the world state with given id.
 func (s *SmartContract) ReadAsset(ctx contractapi.TransactionContextInterface, id string) (*Asset, error) {
 	assetJSON, err := ctx.GetStub().GetState(id)
 	if err != nil {
@@ -121,7 +99,6 @@ func (s *SmartContract) ReadAsset(ctx contractapi.TransactionContextInterface, i
 	return &asset, nil
 }
 
-// UpdateAsset updates an existing asset in the world state with provided parameters.
 func (s *SmartContract) UpdateAsset(ctx contractapi.TransactionContextInterface, id string, color string, size int, owner string, appraisedValue int) error {
 	exists, err := s.AssetExists(ctx, id)
 	if err != nil {
@@ -147,7 +124,6 @@ func (s *SmartContract) UpdateAsset(ctx contractapi.TransactionContextInterface,
 	return ctx.GetStub().PutState(id, assetJSON)
 }
 
-// DeleteAsset deletes an given asset from the world state.
 func (s *SmartContract) DeleteAsset(ctx contractapi.TransactionContextInterface, id string) error {
 	exists, err := s.AssetExists(ctx, id)
 	if err != nil {
@@ -160,7 +136,6 @@ func (s *SmartContract) DeleteAsset(ctx contractapi.TransactionContextInterface,
 	return ctx.GetStub().DelState(id)
 }
 
-// AssetExists returns true when asset with given ID exists in world state
 func (s *SmartContract) AssetExists(ctx contractapi.TransactionContextInterface, id string) (bool, error) {
 	assetJSON, err := ctx.GetStub().GetState(id)
 	if err != nil {
@@ -170,7 +145,6 @@ func (s *SmartContract) AssetExists(ctx contractapi.TransactionContextInterface,
 	return assetJSON != nil, nil
 }
 
-// TransferAsset updates the owner field of asset with given id in world state.
 func (s *SmartContract) TransferAsset(ctx contractapi.TransactionContextInterface, id string, newOwner string) error {
 	asset, err := s.ReadAsset(ctx, id)
 	if err != nil {
@@ -186,7 +160,6 @@ func (s *SmartContract) TransferAsset(ctx contractapi.TransactionContextInterfac
 	return ctx.GetStub().PutState(id, assetJSON)
 }
 
-// GetAllAssets returns all assets found in world state
 func (s *SmartContract) GetAllAssets(ctx contractapi.TransactionContextInterface) ([]*Asset, error) {
 	// range query with empty string for startKey and endKey does an
 	// open-ended query of all assets in the chaincode namespace.
