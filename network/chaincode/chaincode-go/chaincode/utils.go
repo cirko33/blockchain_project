@@ -3,6 +3,7 @@ package chaincode
 import (
 	"fmt"
 	"math/rand"
+
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 

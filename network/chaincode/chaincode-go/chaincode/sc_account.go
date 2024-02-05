@@ -3,6 +3,7 @@ package chaincode
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
@@ -14,7 +15,7 @@ func (s *SmartContract) CreateBankAccount(ctx contractapi.TransactionContextInte
 	if err != nil {
 		return nil, err
 	}
-	if bankAccountBytes != nil{
+	if bankAccountBytes != nil {
 		err = json.Unmarshal(bankAccountBytes, &bankAccount)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to unmarshal bank account: %v", err)

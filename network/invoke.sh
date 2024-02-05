@@ -19,4 +19,4 @@ peer chaincode invoke \
     --tlsRootCertFiles "${PWD}/organizations/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt" \
     --peerAddresses localhost:10051 \
     --tlsRootCertFiles "${PWD}/organizations/peerOrganizations/org4.example.com/peers/peer0.org4.example.com/tls/ca.crt" \
-    -c "{\"function\":\"${FUNC_NAME}\",\"Args\":[]}"
+    -c "{\"function\":\"${FUNC_NAME}\",\"Args\":[\"1\",\"2\"]}"
