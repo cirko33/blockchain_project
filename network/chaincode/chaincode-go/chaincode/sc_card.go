@@ -1,7 +1,13 @@
 package chaincode
 
+import (
+	"fmt"
+	"encoding/json"
+	"github.com/hyperledger/fabric-contract-api-go/contractapi"
+)
+
 // Create card
-func (s *SmartContract) CreateCard(ctx contractapi.TransactionContextInterface, id int64, cardNumber, bankAccountId string) (*Card, error) {
+func (s *SmartContract) CreateCard(ctx contractapi.TransactionContextInterface, cardNumber string, id, bankAccountId int64) (*Card, error) {
 	var card Card
 	cardBytes, err := s.GetEntityById(ctx, "card", id)
 
@@ -30,13 +36,13 @@ func (s *SmartContract) CreateCard(ctx contractapi.TransactionContextInterface, 
 	}
 
 	cardId := toCardId(id)
-	card := Card{
-		Id:       accountId,
+	newCard := Card{
+		Id:       cardId,
 		CardNumber: cardNumber,
-		BankAccountId: bankAccountId
+		BankAccountId: bankAccount.Id,
 	}
 
-    bankAccount.Cards.put(card)
+    bankAccount.Cards = append( bankAccount.Cards, newCard)
 	
 	bankAccountJSON, err := json.Marshal(bankAccount)
 	if err != nil {
@@ -52,7 +58,7 @@ func (s *SmartContract) CreateCard(ctx contractapi.TransactionContextInterface, 
 
 
 // Remove card
-func (s *SmartContract) RemoveCard(ctx contractapi.TransactionContextInterface, cardId int64, , bankAccountId string) (*Card, error) {
+func (s *SmartContract) RemoveCard(ctx contractapi.TransactionContextInterface, cardId int64, bankAccountId int64) (*Card, error) {
 	var card Card
 	cardBytes, err := s.GetEntityById(ctx, "card", cardId)
 
@@ -64,11 +70,11 @@ func (s *SmartContract) RemoveCard(ctx contractapi.TransactionContextInterface, 
 		if err != nil {
 			return nil, fmt.Errorf("Failed to unmarshal card: %v", err)
 		}
-	    return nil, fmt.Errorf("The card %s already has an car with id %s", cardNumber, card.Id)
+	    return nil, fmt.Errorf("The bankAccount %d already has an card with id %s", bankAccountId, card.Id)
 	}
 
 	var bankAccount BankAccount
-	bankAccountBytes, err := s.GetEntityById(ctx, "bankAccount", id)
+	bankAccountBytes, err := s.GetEntityById(ctx, "bankAccount", bankAccountId)
 
 	if err != nil {
 		return nil, err
@@ -80,14 +86,7 @@ func (s *SmartContract) RemoveCard(ctx contractapi.TransactionContextInterface, 
 		}
 	}
 
-	cardId := toCardId(id)
-	card := Card{
-		Id:       accountId,
-		CardNumber: cardNumber,
-		BankAccountId: bankAccountId
-	}
-
-    RemoveCard(&bankAccount, cardId)
+    RemoveCard(&bankAccount, card.Id)
 	
 	bankAccountJSON, err := json.Marshal(bankAccount)
 	if err != nil {
@@ -105,9 +104,9 @@ func (s *SmartContract) RemoveCard(ctx contractapi.TransactionContextInterface, 
 	return &card, nil
 }
 
-func RemoveCard(account *BankAccount, cardNumber string) {
+func RemoveCard(account *BankAccount, id string) {
     for i, card := range account.Cards {
-        if card.Number == cardNumber {
+        if card.Id == id {
             account.Cards = append(account.Cards[:i], account.Cards[i+1:]...)
             return
         }

@@ -3,15 +3,13 @@ package chaincode
 import (
 	"fmt"
 	"math/rand"
-	"strconv"
-
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
 func (s *SmartContract) GetEntityById(ctx contractapi.TransactionContextInterface, entityName string, id int64) ([]byte, error) {
 	entity, err := ctx.GetStub().GetState(fmt.Sprintf("%s-%d", entityName, id))
 	if err != nil {
-		return false, fmt.Errorf("Failed to read entity (%s) with id (%s) from world state: %v", entityName, id, err)
+		return nil, fmt.Errorf("Failed to read entity (%s) with id (%s) from world state: %v", entityName, id, err)
 	}
 
 	return entity, nil
