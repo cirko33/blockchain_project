@@ -1,9 +1,25 @@
 #!/bin/bash
 
+if [ $# -lt 1 ]; then
+    echo "Usage: ./invoke.sh <function> [args...]"
+    exit 1
+fi
+
 # Set fabric env vars
 source env-vars.sh
 
 FUNC_NAME=$1
+ARGS=""
+if [ $# -gt 1 ]; then
+    ARGS="\"$2\""
+    for i in ${@:3}; do
+        ARGS="$ARGS,\"$i\""
+    done
+fi
+
+
+COMMAND="{\"function\":\"$FUNC_NAME\",\"Args\":[$ARGS]}"
+
 peer chaincode invoke \
     -o localhost:6050 \
     --ordererTLSHostnameOverride orderer.example.com \
@@ -19,4 +35,4 @@ peer chaincode invoke \
     --tlsRootCertFiles "${PWD}/organizations/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt" \
     --peerAddresses localhost:10051 \
     --tlsRootCertFiles "${PWD}/organizations/peerOrganizations/org4.example.com/peers/peer0.org4.example.com/tls/ca.crt" \
-    -c "{\"function\":\"${FUNC_NAME}\",\"Args\":[\"1\",\"2\"]}"
+    -c "$COMMAND"

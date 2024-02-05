@@ -82,3 +82,231 @@ services:
     networks:
       - test
 
+##### couchdb11 #####
+  couchdb11:
+    extends:
+      file: common-all.yaml
+      service: common-couch
+    container_name: couchdb11
+    ports:
+      - "7985:5984"
+    networks:
+      - test
+
+  peer1.org1.example.com:
+    environment:
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb11:5984
+    depends_on:
+      - couchdb11
+    networks:
+      - test
+
+##### couchdb12 #####
+  couchdb12:
+    extends:
+      file: common-all.yaml
+      service: common-couch
+    container_name: couchdb12
+    ports:
+      - "8985:5984"
+    networks:
+      - test
+
+  peer1.org2.example.com:
+    environment:
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb12:5984
+    depends_on:
+      - couchdb12
+    networks:
+      - test
+
+##### couchdb13 #####
+  couchdb13:
+    extends:
+      file: common-all.yaml
+      service: common-couch
+    container_name: couchdb13
+    ports:
+      - "9985:5984"
+    networks:
+      - test
+
+  peer1.org3.example.com:
+    environment:
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb13:5984
+    depends_on:
+      - couchdb13
+    networks:
+      - test
+
+##### couchdb14 #####
+  couchdb14:
+    extends:
+      file: common-all.yaml
+      service: common-couch
+    container_name: couchdb14
+    ports:
+      - "10985:5984"
+    networks:
+      - test
+
+  peer1.org4.example.com:
+    environment:
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb14:5984
+    depends_on:
+      - couchdb14
+    networks:
+      - test
+
+##### couchdb21 #####
+  couchdb21:
+    extends:
+      file: common-all.yaml
+      service: common-couch
+    container_name: couchdb21
+    ports:
+      - "7986:5984"
+    networks:
+      - test
+
+  peer2.org1.example.com:
+    environment:
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb21:5984
+    depends_on:
+      - couchdb21
+    networks:
+      - test
+
+##### couchdb22 #####
+  couchdb22:
+    extends:
+      file: common-all.yaml
+      service: common-couch
+    container_name: couchdb22
+    ports:
+      - "8986:5984"
+    networks:
+      - test
+
+  peer2.org2.example.com:
+    environment:
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb22:5984
+    depends_on:
+      - couchdb22
+    networks:
+      - test
+
+##### couchdb23 #####
+  couchdb23:
+    extends:
+      file: common-all.yaml
+      service: common-couch
+    container_name: couchdb23
+    ports:
+      - "9986:5984"
+    networks:
+      - test
+
+  peer2.org3.example.com:
+    environment:
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb23:5984
+    depends_on:
+      - couchdb23
+    networks:
+      - test
+
+##### couchdb24 #####
+  couchdb24:
+    extends:
+      file: common-all.yaml
+      service: common-couch
+    container_name: couchdb24
+    ports:
+      - "10986:5984"
+    networks:
+      - test
+
+  peer2.org4.example.com:
+    environment:
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb24:5984
+    depends_on:
+      - couchdb24
+    networks:
+      - test
+
+##### couchdb31 #####
+  couchdb31:
+    extends:
+      file: common-all.yaml
+      service: common-couch
+    container_name: couchdb31
+    ports:
+      - "7987:5984"
+    networks:
+      - test
+
+  peer3.org1.example.com:
+    environment:
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb31:5984
+    depends_on:
+      - couchdb31
+    networks:
+      - test
+
+##### couchdb32 #####
+  couchdb32:
+    extends:
+      file: common-all.yaml
+      service: common-couch
+    container_name: couchdb32
+    ports:
+      - "8987:5984"
+    networks:
+      - test
+
+  peer3.org2.example.com:
+    environment:
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb32:5984
+    depends_on:
+      - couchdb32
+    networks:
+      - test
+
+##### couchdb33 #####
+  couchdb33:
+    extends:
+      file: common-all.yaml
+      service: common-couch
+    container_name: couchdb33
+    ports:
+      - "9987:5984"
+    networks:
+      - test
+
+  peer3.org3.example.com:
+    environment:
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb33:5984
+    depends_on:
+      - couchdb33
+    networks:
+      - test
+
+##### couchdb34 #####
+  couchdb34:
+    extends:
+      file: common-all.yaml
+      service: common-couch
+    container_name: couchdb34
+    ports:
+      - "10987:5984"
+    networks:
+      - test
+
+  peer3.org4.example.com:
+    environment:
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb34:5984
+    depends_on:
+      - couchdb34
+    networks:
+      - test
+
