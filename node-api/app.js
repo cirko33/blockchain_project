@@ -13,8 +13,10 @@ app.use(cors());
 app.use(express.json());
 
 const bankAccountRoutes = require("./routes/bankAccount");
+const bankRoutes = require("./routes/bank");
 
 app.use(bankAccountRoutes);
+app.use(bankRoutes);
 app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 app.use((req, res) => {

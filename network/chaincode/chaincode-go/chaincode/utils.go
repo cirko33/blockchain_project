@@ -8,28 +8,41 @@ import (
 )
 
 func (s *SmartContract) GetEntityById(ctx contractapi.TransactionContextInterface, entityName string, id int64) ([]byte, error) {
-	entity, err := ctx.GetStub().GetState(fmt.Sprintf("%s-%d", entityName, id))
+	entity, err := ctx.GetStub().GetState(toEntityId(entityName, id))
 	if err != nil {
-		return nil, fmt.Errorf("Failed to read entity (%s) with id (%s) from world state: %v", entityName, id, err)
+		return nil, fmt.Errorf("failed to read entity (%s) with id (%d) from world state: %v", entityName, id, err)
 	}
 
 	return entity, nil
 }
 
+func (s *SmartContract) EntityExists(ctx contractapi.TransactionContextInterface, entityName string, id int64) (bool, error) {
+	itemJSON, err := ctx.GetStub().GetState(toEntityId(entityName, id))
+	if err != nil {
+		return false, fmt.Errorf("Failed to read entity of type '%s' with id '%s' from world state: %v", entityName, id, err)
+	}
+
+	return itemJSON != nil, nil
+}
+
+func toEntityId(typeName string, intId int64) string {
+	return fmt.Sprintf("%s-%d", typeName, intId)
+}
+
 func toBankId(intId int64) string {
-	return fmt.Sprintf("%s-%d", BANK_TYPE_NAME, intId)
+	return toEntityId(BANK_TYPE_NAME, intId)
 }
 
 func toPersonId(intId int64) string {
-	return fmt.Sprintf("%s-%d", PERSON_TYPE_NAME, intId)
+	return toEntityId(PERSON_TYPE_NAME, intId)
 }
 
 func toBankAccountId(intId int64) string {
-	return fmt.Sprintf("%s-%d", BANK_ACCOUNT_TYPE_NAME, intId)
+	return toEntityId(BANK_ACCOUNT_TYPE_NAME, intId)
 }
 
 func toCardId(intId int64) string {
-	return fmt.Sprintf("%s-%d", CARD_TYPE_NAME, intId)
+	return toEntityId(CARD_TYPE_NAME, intId)
 }
 
 func buildMockBanks(count int64) []Bank {
@@ -99,5 +112,5 @@ func buildMockAccounts(persons []Person) []BankAccount {
 }
 
 func getRandomBalance() float64 {
-	return rand.Float64() * (1000 - 100)
+	return 100 * rand.Float64() * (900)
 }

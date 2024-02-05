@@ -42,7 +42,7 @@ func ConvertCurrency(amount float64, fromIso, toIso string) (float64, error) {
 func GetExchangeRate(iso string) (*ExchangeRate, error) {
 	rate, exists := NationalBankOfSerbia[iso]
 	if !exists {
-		return nil, fmt.Errorf("The exchange rate for %s not found", iso)
+		return nil, fmt.Errorf("the exchange rate for %s not found", iso)
 	}
 	return &rate, nil
 }
