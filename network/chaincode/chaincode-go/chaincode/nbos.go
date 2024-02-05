@@ -23,7 +23,6 @@ var NationalBankOfSerbia = map[string]ExchangeRate{
 }
 
 func ConvertCurrency(amount float64, fromIso, toIso string) (float64, error) {
-
 	fromRate, err := GetExchangeRate(fromIso)
 	if err != nil {
 		return 0, err

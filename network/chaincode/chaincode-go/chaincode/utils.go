@@ -19,7 +19,7 @@ func (s *SmartContract) GetEntityById(ctx contractapi.TransactionContextInterfac
 func (s *SmartContract) EntityExists(ctx contractapi.TransactionContextInterface, entityName string, id int64) (bool, error) {
 	itemJSON, err := ctx.GetStub().GetState(toEntityId(entityName, id))
 	if err != nil {
-		return false, fmt.Errorf("Failed to read entity of type '%s' with id '%s' from world state: %v", entityName, id, err)
+		return false, fmt.Errorf("failed to read entity of type '%s' with id '%d' from world state: %v", entityName, id, err)
 	}
 
 	return itemJSON != nil, nil
@@ -41,10 +41,6 @@ func toBankAccountId(intId int64) string {
 	return toEntityId(BANK_ACCOUNT_TYPE_NAME, intId)
 }
 
-func toCardId(intId int64) string {
-	return toEntityId(CARD_TYPE_NAME, intId)
-}
-
 func buildMockBanks(count int64) []Bank {
 	var result []Bank
 	for bank_id := int64(0); bank_id < count; bank_id++ {
@@ -55,24 +51,19 @@ func buildMockBanks(count int64) []Bank {
 }
 
 func buildMockBank(id int64) Bank {
-	persons := buildMockPersons(id, 3)
-	accounts := buildMockAccounts(persons)
 	bank_id := toBankId(id)
 	return Bank{
 		Id:       bank_id,
 		Location: fmt.Sprintf("Location_%s", bank_id),
 		PIB:      fmt.Sprintf("PIB_%s", bank_id),
-		Persons:  persons,
-		Accounts: accounts,
 	}
 }
 
-func buildMockPersons(start_id int64, count int64) []Person {
+func buildMockPersons(count int64) []Person {
 	var result []Person
 
 	for i := int64(0); i < count; i++ {
-		id := start_id + i
-		str_id := toPersonId(id)
+		str_id := toPersonId(i)
 		result = append(result, Person{
 			Id:      str_id,
 			Name:    fmt.Sprintf("Person_%s", str_id),
@@ -84,29 +75,43 @@ func buildMockPersons(start_id int64, count int64) []Person {
 	return result
 }
 
-func buildMockAccounts(persons []Person) []BankAccount {
+func buildMockAccounts(banks []Bank, persons []Person) []BankAccount {
+	result := make([]BankAccount, 0)
+
+	id_counter := int64(0)
+	for _, bank := range banks {
+		for person_idx, person := range persons {
+			newAccounts := buildAccountsForPerson(person, int64(person_idx), bank, id_counter)
+			for _, newAcc := range newAccounts {
+				result = append(result, newAcc)
+				id_counter++
+			}
+		}
+	}
+
+	return result
+}
+
+func buildAccountsForPerson(person Person, index int64, bank Bank, startId int64) []BankAccount {
 	var result []BankAccount
 	currency_labels := []string{"RSD", "EUR"}
-	id_counter := 0
-	for i, person := range persons {
-		account_count := 1 + i%2
-		for j := 0; j < account_count; j++ {
-			account_id := id_counter
-			id_counter++
-			account_id_str := toBankAccountId(int64(account_id))
-			result = append(result, BankAccount{
-				Id:       account_id_str,
-				PersonId: person.Id,
-				Balance:  getRandomBalance(),
-				Currency: currency_labels[j],
-				Cards: []Card{
-					{
-						CardNumber:    fmt.Sprintf("%s_123123", account_id_str),
-						BankAccountId: account_id_str,
-					},
-				},
-			})
-		}
+	id_counter := startId
+	account_count := 1 + startId%2
+	for j := 0; j < int(account_count); j++ {
+		account_id := id_counter
+		id_counter++
+		account_id_str := toBankAccountId(int64(account_id))
+		card_number := fmt.Sprintf("%s_123123", account_id_str)
+		result = append(result, BankAccount{
+			Id:       account_id_str,
+			PersonId: person.Id,
+			BankId:   bank.Id,
+			Balance:  getRandomBalance(),
+			Currency: currency_labels[j],
+			Cards: map[string]Card{
+				card_number: Card{CardNumber: card_number},
+			},
+		})
 	}
 	return result
 }

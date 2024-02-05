@@ -8,7 +8,9 @@ import (
 )
 
 func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
-	banks := buildMockBanks(4)
+	banks := buildMockBanks(2)
+	persons := buildMockPersons(2)
+	bankAccounts := buildMockAccounts(banks, persons)
 
 	for _, bank := range banks {
 		bankJSON, err := json.Marshal(bank)
@@ -17,6 +19,30 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 		}
 
 		err = ctx.GetStub().PutState(bank.Id, bankJSON)
+		if err != nil {
+			return fmt.Errorf("failed to put to world state. %v", err)
+		}
+	}
+
+	for _, person := range persons {
+		personJSON, err := json.Marshal(person)
+		if err != nil {
+			return err
+		}
+
+		err = ctx.GetStub().PutState(person.Id, personJSON)
+		if err != nil {
+			return fmt.Errorf("failed to put to world state. %v", err)
+		}
+	}
+
+	for _, bankAccount := range bankAccounts {
+		bankAccountJSON, err := json.Marshal(bankAccount)
+		if err != nil {
+			return err
+		}
+
+		err = ctx.GetStub().PutState(bankAccount.Id, bankAccountJSON)
 		if err != nil {
 			return fmt.Errorf("failed to put to world state. %v", err)
 		}

@@ -7,6 +7,22 @@ import (
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
+func (s *SmartContract) GetBank(ctx contractapi.TransactionContextInterface, id int64) (*Bank, error) {
+	bankJSON, err := s.GetEntityById(ctx, BANK_TYPE_NAME, id)
+
+	if err != nil || bankJSON == nil {
+		return nil, err
+	}
+
+	var bank Bank
+	err = json.Unmarshal(bankJSON, &bank)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to unmarshal bank: %v", err)
+	}
+
+	return &bank, nil
+}
+
 func (s *SmartContract) GetAllBanks(ctx contractapi.TransactionContextInterface) ([]*Bank, error) {
 	resultsIterator, err := ctx.GetStub().GetStateByRange("", "")
 	if err != nil {
@@ -47,8 +63,6 @@ func (s *SmartContract) CreateBank(ctx contractapi.TransactionContextInterface, 
 		Id:       newId,
 		Location: location,
 		PIB:      pib,
-		Persons:  make([]Person, 0),
-		Accounts: make([]BankAccount, 0),
 	}
 
 	bankJSON, err := json.Marshal(newBank)
@@ -62,23 +76,4 @@ func (s *SmartContract) CreateBank(ctx contractapi.TransactionContextInterface, 
 	}
 
 	return &newBank, nil
-}
-
-func (s *SmartContract) GetBank(ctx contractapi.TransactionContextInterface, id int64) (*Bank, error) {
-	bankJSON, err := s.GetEntityById(ctx, BANK_TYPE_NAME, id)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get bank with ID %d: %s", id, err)
-	}
-
-	if bankJSON == nil {
-		return nil, fmt.Errorf("bank with ID %d does not exist", id)
-	}
-
-	bank := Bank{}
-	err = json.Unmarshal(bankJSON, &bank)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshall bank json: %s", err)
-	}
-
-	return &bank, nil
 }

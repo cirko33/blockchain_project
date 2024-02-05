@@ -9,11 +9,9 @@ type SmartContract struct {
 }
 
 type Bank struct {
-	Id       string        `json:"id"`
-	Location string        `json:"location"`
-	PIB      string        `json:"pib"`
-	Persons  []Person      `json:"persons"`
-	Accounts []BankAccount `json:"accounts"`
+	Id       string `json:"id"`
+	Location string `json:"location"`
+	PIB      string `json:"pib"`
 }
 
 type Person struct {
@@ -24,17 +22,16 @@ type Person struct {
 }
 
 type BankAccount struct {
-	Id       string  `json:"id"`
-	PersonId string  `json:"personId"`
-	Balance  float64 `json:"balance"`
-	Currency string  `json:"currency"`
-	Cards    []Card  `json:"cards"`
+	Id       string          `json:"id"`
+	PersonId string          `json:"personId"`
+	BankId   string          `json:"bankId"`
+	Balance  float64         `json:"balance"`
+	Currency string          `json:"currency"`
+	Cards    map[string]Card `json:"cards"`
 }
 
 type Card struct {
-	Id       string  `json:"id"`
-	CardNumber    string `json:"cardNumber"`
-	BankAccountId string `json:"bankAccountId"`
+	CardNumber string `json:"cardNumber"`
 }
 
 type ExchangeRate struct {
