@@ -39,10 +39,10 @@ func (s *SmartContract) CreateBankAccount(ctx contractapi.TransactionContextInte
 		return nil, err
 	}
 
-	accountId := toBankAccountId(id)
+	accountId := ToBankAccountId(id)
 	account := BankAccount{
 		Id:       accountId,
-		PersonId: toPersonId(personId),
+		PersonId: ToPersonId(personId),
 		BankId:   bank.Id,
 		Balance:  balance,
 		Currency: currency,
