@@ -4,11 +4,11 @@ const { getContract } = require("../fabric/ledger");
 
 const router = Router();
 
-router.get("/get-all-banks", async (req, res) => {
+router.get("/get-all-persons", async (req, res) => {
     try {
         const contract = await getContract();
         const result = await contract.submitTransaction(
-            "GetAllBanks"
+            "GetAllPersons"
         );
 
         try {
@@ -22,7 +22,7 @@ router.get("/get-all-banks", async (req, res) => {
     }
 });
 
-router.get("/get-bank", async (req, res) => {
+router.get("/get-person", async (req, res) => {
     try {
         let id;
 
@@ -35,7 +35,7 @@ router.get("/get-bank", async (req, res) => {
 
         const contract = await getContract();
         const result = await contract.submitTransaction(
-            "GetBank", id
+            "GetPerson", id
         );
 
         try {
@@ -49,26 +49,29 @@ router.get("/get-bank", async (req, res) => {
     }
 });
 
-router.post("/create-bank", async (req, res) => {
+router.post("/create-person", async (req, res) => {
     try {
         let id;
-        let location;
-        let pib;
+        let name;
+        let surname;
+        let email;
 
         try {
             id = req.body["id"];
             if (id.length < 1) throw "";
-            location = req.body["location"]
-            if (location.length < 1) throw "";
-            pib = req.body["pib"]
-            if (pib.length < 1) throw "";
+            name = req.body["name"]
+            if (name.length < 1) throw "";
+            surname = req.body["surname"]
+            if (surname.length < 1) throw "";
+            email = req.body["email"]
+            if (email.length < 1) throw "";
         } catch (_) {
-            return res.status(400).send({ message: "Id, location and pib are mandatory fields!" });
+            return res.status(400).send({ message: "Id, name, surname, and email are mandatory fields!" });
         }
 
         const contract = await getContract();
         const result = await contract.submitTransaction(
-            "CreateBank", id, location, pib
+            "CreatePerson", id, name, surname, email
         );
 
         try {
