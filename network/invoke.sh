@@ -35,10 +35,6 @@ function createPeer0Connections() {
 
 createCommand $@
 createPeer0Connections
-echo "COMMAND: $COMMAND"
-echo "\n"
-echo "PEER_CONNECTIONS: $PEER_CONNECTIONS"
-echo "\n"
 
 peer chaincode invoke \
     -o localhost:6050 \
