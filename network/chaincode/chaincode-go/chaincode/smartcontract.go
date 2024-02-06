@@ -8,8 +8,8 @@ import (
 )
 
 func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
-	banks := BuildMockBanks(2)
-	persons := BuildMockPersons(2)
+	banks := BuildMockBanks(4)
+	persons := BuildMockPersons(12)
 	bankAccounts := BuildMockAccounts(banks, persons)
 
 	for _, bank := range banks {
