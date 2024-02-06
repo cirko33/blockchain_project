@@ -329,7 +329,6 @@ function networkDown() {
     # remove orderer block and other channel configuration transactions and certs
     docker run --rm -v $(pwd):/data busybox sh -c 'cd /data && rm -rf system-genesis-block/*.block organizations/peerOrganizations organizations/ordererOrganizations'
     ## remove fabric ca artifacts
-    # TO DO - WONT WORK
     for (( i=1; i<=$ORGANIZATION_NUMBER; i++ )); do
       COMMAND="cd /data && rm -rf organizations/fabric-ca/org${i}/msp organizations/fabric-ca/org${i}/tls-cert.pem organizations/fabric-ca/org${i}/ca-cert.pem organizations/fabric-ca/org${i}/IssuerPublicKey organizations/fabric-ca/org${i}/IssuerRevocationPublicKey organizations/fabric-ca/org${i}/fabric-ca-server.db"
       docker run --rm -v $(pwd):/data busybox sh -c "$COMMAND"

@@ -9,12 +9,15 @@ fi
 source env-vars.sh
 
 # Get arguments
-ARGS="\"$1\""
-for i in ${@:2}; do
-    ARGS="$ARGS,\"$i\""
-done
-ARGS="{\"Args\":[$ARGS]}"
-echo $ARGS
+function createArgs() {
+    ARGS="\"$1\""
+    for i in ${@:2}; do
+        ARGS="$ARGS,\"$i\""
+    done
+    ARGS="{\"Args\":[$ARGS]}"
+}
+
+createArgs $@
 
 # Query chaincode
-peer chaincode query -C mychannel -n basic -c "$ARGS"
+peer chaincode query -C channel1 -n basic1 -c "$ARGS"

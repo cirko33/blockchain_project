@@ -7,8 +7,8 @@ const { buildCCPOrg, buildWallet } = require("./org");
 dotenv.config({ path: path.resolve("env", "development.env") });
 const env = process.env;
 
-const channelName = env["CHANNEL_NAME"] || "mychannel";
-const chaincodeName = env["CHAINCODE_NAME"] || "basic";
+const channelName = env["CHANNEL_NAME"] || "channel1";
+const chaincodeName = env["CHAINCODE_NAME"] || "basic1";
 const organizationId = parseInt(env["ORGANIZATION_ID"] || "1");
 const mspOrg = `Org${organizationId}MSP`;
 const walletPath = path.join(__dirname, env["WALLET_PATH"] || "wallet");

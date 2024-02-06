@@ -12,8 +12,8 @@ const path = require('path');
 const { buildCAClient, registerAndEnrollUser, enrollAdmin } = require('./CAUtil.js');
 const { buildCCPOrg1, buildWallet } = require('./AppUtil.js');
 
-const channelName = 'mychannel';
-const chaincodeName = 'basic';
+const channelName = 'channel1';
+const chaincodeName = 'basic1';
 const mspOrg1 = 'Org1MSP';
 const walletPath = path.join(__dirname, 'wallet');
 const org1UserId = 'appUser';
