@@ -17,7 +17,7 @@ func (s *SmartContract) GetBankAccount(ctx contractapi.TransactionContextInterfa
 	var bankAccount BankAccount
 	err = json.Unmarshal(bankAccountJSON, &bankAccount)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to unmarshal bank account: %v", err)
+		return nil, fmt.Errorf("failed to unmarshal bank account: %v", err)
 	}
 
 	return &bankAccount, nil
@@ -80,7 +80,7 @@ func (s *SmartContract) CheckAccountCurrencies(ctx contractapi.TransactionContex
 // Transfer funds
 func (s *SmartContract) TransferFunds(ctx contractapi.TransactionContextInterface, fromAccountId int64, toAccountId int64, amount float64) error {
 	if amount <= 0 {
-		return fmt.Errorf("The transfer amount must be positive")
+		return fmt.Errorf("the transfer amount must be positive")
 	}
 
 	fromAccount, err := s.GetBankAccount(ctx, fromAccountId)
@@ -103,7 +103,7 @@ func (s *SmartContract) TransferFunds(ctx contractapi.TransactionContextInterfac
 
 	// check source account
 	if fromAccount.Balance < amount {
-		return fmt.Errorf("The source bank account balance is insufficient")
+		return fmt.Errorf("the source bank account balance is insufficient")
 	}
 
 	if fromAccount.Currency != toAccount.Currency {
@@ -143,17 +143,17 @@ func (s *SmartContract) TransferFunds(ctx contractapi.TransactionContextInterfac
 // Withdraw funds
 func (s *SmartContract) WithdrawFunds(ctx contractapi.TransactionContextInterface, accountId int64, amount float64) error {
 	if amount <= 0 {
-		return fmt.Errorf("Withdrawal amount must be a positive number")
+		return fmt.Errorf("withdrawal amount must be a positive number")
 	}
 
 	bankAccount, err := s.GetBankAccount(ctx, accountId)
 	if err != nil || bankAccount == nil {
-		return fmt.Errorf("Failed to find bank account")
+		return fmt.Errorf("failed to find bank account")
 	}
 
 	// check balance
 	if bankAccount.Balance < amount {
-		return fmt.Errorf("The bank account doesn't have enough balance")
+		return fmt.Errorf("the bank account doesn't have enough balance")
 	}
 
 	bankAccount.Balance -= amount
@@ -170,16 +170,16 @@ func (s *SmartContract) WithdrawFunds(ctx contractapi.TransactionContextInterfac
 // Deposit funds into an account
 func (s *SmartContract) DepositFunds(ctx contractapi.TransactionContextInterface, accountId int64, currency string, amount float64) error {
 	if amount <= 0 {
-		return fmt.Errorf("Deposit amount must be positive")
+		return fmt.Errorf("deposit amount must be positive")
 	}
 
 	bankAccount, err := s.GetBankAccount(ctx, accountId)
 	if err != nil || bankAccount == nil {
-		return fmt.Errorf("Failed to find bank account")
+		return fmt.Errorf("failed to find bank account")
 	}
 
 	if bankAccount.Currency != currency {
-		return fmt.Errorf("Can't deposit: account currency is %s but deposit is in %s", bankAccount.Currency, currency)
+		return fmt.Errorf("can't deposit: account currency is %s but deposit is in %s", bankAccount.Currency, currency)
 	}
 
 	bankAccount.Balance += amount

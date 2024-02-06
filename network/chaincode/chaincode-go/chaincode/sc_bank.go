@@ -17,7 +17,7 @@ func (s *SmartContract) GetBank(ctx contractapi.TransactionContextInterface, id 
 	var bank Bank
 	err = json.Unmarshal(bankJSON, &bank)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to unmarshal bank: %v", err)
+		return nil, fmt.Errorf("failed to unmarshal bank: %v", err)
 	}
 
 	return &bank, nil

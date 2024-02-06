@@ -109,7 +109,7 @@ func buildAccountsForPerson(person Person, index int64, bank Bank, startId int64
 			Balance:  getRandomBalance(),
 			Currency: currency_labels[j],
 			Cards: map[string]Card{
-				card_number: Card{CardNumber: card_number},
+				card_number: {CardNumber: card_number},
 			},
 		})
 	}

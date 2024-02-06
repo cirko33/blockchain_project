@@ -16,7 +16,7 @@ func (s *SmartContract) CreateCard(ctx contractapi.TransactionContextInterface, 
 
 	_, exists := bankAccount.Cards[cardNumber]
 	if exists {
-		return nil, fmt.Errorf("Card with given card number %s already exists in bank account")
+		return nil, fmt.Errorf("Card with given card number %s already exists in bank account", cardNumber)
 	}
 
 	bankAccount.Cards[cardNumber] = Card{
