@@ -9,9 +9,10 @@ type SmartContract struct {
 }
 
 type Bank struct {
-	Id       string `json:"id"`
-	Location string `json:"location"`
-	PIB      string `json:"pib"`
+	Id             string `json:"id"`
+	Location       string `json:"location"`
+	PIB            string `json:"pib"`
+	FoundationYear int    `json:"foundationYear"`
 }
 
 type Person struct {
