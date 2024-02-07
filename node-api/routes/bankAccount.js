@@ -2,6 +2,8 @@ const { Router } = require("express");
 
 const { getContract } = require("../fabric/ledger");
 
+const { prettyJSONString } = require("../utils/utils");
+
 const router = Router();
 
 router.post("/create-bank-account", async (req, res) => {
@@ -48,9 +50,9 @@ router.post("/create-bank-account", async (req, res) => {
       balance
     );
     try {
-      return res.send(JSON.stringify(result));
+      return res.send(prettyJSONString(result));
     } catch (e) {
-      return res.send({ result: JSON.stringify(result) });
+      return res.send({ result: prettyJSONString(result) });
     }
   } catch (e) {
     console.error(`Error occurred: ${e}`);
@@ -105,7 +107,7 @@ router.post("/transfer-funds", async (req, res) => {
       if(!sameCurrency && !convert)
       return res.status(400).send({ message: "Accounts have different currencies!" });
     } catch (e) {
-      return res.send({ result: JSON.stringify(result) });
+      return res.send({ result: prettyJSONString(result) });
     }
 
 
@@ -116,9 +118,9 @@ router.post("/transfer-funds", async (req, res) => {
       amount
     );
     try {
-      return res.send(JSON.stringify(result));
+      return res.send(prettyJSONString(result));
     } catch (e) {
-      return res.send({ result: JSON.stringify(result) });
+      return res.send({ result: prettyJSONString(result) });
     }
   } catch (e) {
     console.error(`Error occurred: ${e}`);
@@ -152,9 +154,9 @@ router.post("/withdraw-funds", async (req, res) => {
       amount
     );
     try {
-      return res.send(JSON.stringify(result));
+      return res.send(prettyJSONString(result));
     } catch (e) {
-      return res.send({ result: JSON.stringify(result) });
+      return res.send({ result: prettyJSONString(result) });
     }
   } catch (e) {
     console.error(`Error occurred: ${e}`);
@@ -197,9 +199,9 @@ router.post("/deposit-funds", async (req, res) => {
       amount
     );
     try {
-      return res.send(JSON.stringify(result));
+      return res.send(prettyJSONString(result));
     } catch (e) {
-      return res.send({ result: JSON.stringify(result) });
+      return res.send({ result: prettyJSONString(result) });
     }
   } catch (e) {
     console.error(`Error occurred: ${e}`);
@@ -234,9 +236,9 @@ router.patch("/check-account-currencies", async (req, res) => {
       id2
     );
     try {
-      return res.send(JSON.stringify(result));
+      return res.send(prettyJSONString(result));
     } catch (e) {
-      return res.send({ result: JSON.stringify(result) });
+      return res.send({ result: prettyJSONString(result) });
     }
   } catch (e) {
     console.error(`Error occurred: ${e}`);

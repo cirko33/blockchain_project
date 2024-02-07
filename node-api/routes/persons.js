@@ -2,6 +2,8 @@ const { Router } = require("express");
 
 const { getContract } = require("../fabric/ledger");
 
+const { prettyJSONString } = require("../utils/utils");
+
 const router = Router();
 
 router.get("/get-all-persons", async (req, res) => {
@@ -12,9 +14,9 @@ router.get("/get-all-persons", async (req, res) => {
         );
 
         try {
-            return res.send(JSON.stringify(result));
+            return res.send(prettyJSONString(result));
         } catch (e) {
-            return res.send({ result: JSON.stringify(result) });
+            return res.send({ result: prettyJSONString(result) });
         }
     } catch (e) {
         console.error(`Error occurred: ${e}`);
@@ -39,9 +41,9 @@ router.get("/get-person", async (req, res) => {
         );
 
         try {
-            return res.send(JSON.stringify(result));
+            return res.send(prettyJSONString(result));
         } catch (e) {
-            return res.send({ result: JSON.stringify(result) });
+            return res.send({ result: prettyJSONString(result) });
         }
     } catch (e) {
         console.error(`Error occurred: ${e}`);
@@ -75,9 +77,9 @@ router.post("/create-person", async (req, res) => {
         );
 
         try {
-            return res.send(JSON.stringify(result));
+            return res.send(prettyJSONString(result));
         } catch (e) {
-            return res.send({ result: JSON.stringify(result) });
+            return res.send({ result: prettyJSONString(result) });
         }
     } catch (e) {
         console.error(`Error occurred: ${e}`);

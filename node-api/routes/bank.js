@@ -2,6 +2,8 @@ const { Router } = require("express");
 
 const { getContract } = require("../fabric/ledger");
 
+const { prettyJSONString } = require("../utils/utils");
+
 const router = Router();
 
 router.get("/get-all-banks", async (req, res) => {
@@ -12,9 +14,9 @@ router.get("/get-all-banks", async (req, res) => {
         );
 
         try {
-            return res.send(JSON.stringify(result));
+            return res.send(prettyJSONString(result));
         } catch (e) {
-            return res.send({ result: JSON.stringify(result) });
+            return res.send({ result: prettyJSONString(result) });
         }
     } catch (e) {
         console.error(`Error occurred: ${e}`);
@@ -27,7 +29,7 @@ router.get("/get-bank", async (req, res) => {
         let id;
 
         try {
-            id = req.body["id"];
+            id = req.query["id"];
             if (id.length < 1) throw "";
         } catch (_) {
             return res.status(400).send({ message: "Id is a mandatory field!" });
@@ -39,9 +41,9 @@ router.get("/get-bank", async (req, res) => {
         );
 
         try {
-            return res.send(JSON.stringify(result));
+            return res.send(prettyJSONString(result));
         } catch (e) {
-            return res.send({ result: JSON.stringify(result) });
+            return res.send({ result: prettyJSONString(result) });
         }
     } catch (e) {
         console.error(`Error occurred: ${e}`);
@@ -72,9 +74,9 @@ router.post("/create-bank", async (req, res) => {
         );
 
         try {
-            return res.send(JSON.stringify(result));
+            return res.send(prettyJSONString(result));
         } catch (e) {
-            return res.send({ result: JSON.stringify(result) });
+            return res.send({ result: prettyJSONString(result) });
         }
     } catch (e) {
         console.error(`Error occurred: ${e}`);
