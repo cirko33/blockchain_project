@@ -28,20 +28,6 @@ func (s *SmartContract) SearchPersonsBySurnameAndEmail(ctx contractapi.Transacti
 	return s.SearchPersonsRaw(ctx, queryString)
 }
 
-// Not rich query
-func (s *SmartContract) SearchPersonsByBankAccount(ctx contractapi.TransactionContextInterface, bankAccountId int64) (*Person, error) {
-	bankAccount, err := s.GetBankAccount(ctx, bankAccountId)
-	if err != nil {
-		return nil, err
-	}
-
-	if bankAccount == nil {
-		return nil, fmt.Errorf("Bank account with given ID %d not found", bankAccountId)
-	}
-
-	return s._GetPersonInternal(ctx, bankAccount.PersonId)
-}
-
 func (s *SmartContract) SearchPersonsRaw(ctx contractapi.TransactionContextInterface, queryString string) ([]*Person, error) {
 	resultsIterator, err := ctx.GetStub().GetQueryResult(queryString)
 

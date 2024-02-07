@@ -82,3 +82,16 @@ func (s *SmartContract) GetAllPersons(ctx contractapi.TransactionContextInterfac
 
 	return persons, nil
 }
+
+func (s *SmartContract) GetPersonByBankAccount(ctx contractapi.TransactionContextInterface, bankAccountId int64) (*Person, error) {
+	bankAccount, err := s.GetBankAccount(ctx, bankAccountId)
+	if err != nil {
+		return nil, err
+	}
+
+	if bankAccount == nil {
+		return nil, fmt.Errorf("Bank account with given ID %d not found", bankAccountId)
+	}
+
+	return s._GetPersonInternal(ctx, bankAccount.PersonId)
+}
