@@ -12,11 +12,12 @@ Install **Node 20**: ``` curl https://raw.githubusercontent.com/creationix/nvm/m
 
 ## Build and run
 - You can change number of organizations and peers in the `network.sh` file at beginning.  
-- To build and run network run script `./run_network.sh [-i]` (-i flag for ledger initialization with mock data)
+- To build and run network run script `./run_network.sh [-i] [-t]` (-i flag for ledger initialization with mock data, -t is for testing but must first have -i)
 - To invoke changes on peers run from `network` folder `./invoke.sh FUNC_NAME [ARG1 ARG2 ...]` and change FUNC_NAME to Smart Contract function that you want to invoke and add arguments.  
 - To query data on peer run from `network` folder `./query.sh FUNC_NAME [ARG1 ARG2 ...]` and change FUNC_NAME to SmartContract function that you want to query and add arguments.  
 - To run API application place yourself into folder `node_api` and run `npm i && npm start`  
 - To test with API go to [link](http://localhost:3000/doc) and test with Swagger. 
+- To test with script later run `./test-chaincode.sh` from `network` folder.
 
 ## Specification
 Create a web application that facilitates communication with the Hyperledger Fabric network through calls to chaincode functions. The application should support the following functionalities:
