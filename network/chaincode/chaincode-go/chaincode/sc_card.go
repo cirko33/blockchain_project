@@ -110,11 +110,6 @@ func (s *SmartContract) RemoveCard(ctx contractapi.TransactionContextInterface, 
 		return nil, err
 	}
 
-	cardJSON, err1 := json.Marshal(*card)
-	if err1 != nil {
-		return nil, err1
-	}
-
 	err = ctx.GetStub().PutState(bankAccount.Id, bankAccountJSON)
 	if err != nil {
 		return nil, err
