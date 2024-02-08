@@ -6,56 +6,80 @@ const { prettyJSONString } = require("../utils/utils");
 
 const router = Router();
 
+router.get("/get-bank-account", async (req, res) => {
+  /* #swagger.parameters['org'] = {
+      in: 'query',                            
+      required: false,                     
+      type: 'integer'
+
+  }
+
+  #swagger.parameters['channel'] = {
+      in: 'query',                            
+      required: false,                     
+      type: 'integer'
+  }
+
+  #swagger.parameters['id'] = {
+      in: 'query',                            
+      required: true,                     
+      type: 'integer'
+  }
+
+  */
+  try {
+      let id;
+
+      try {
+          id = req.query.id;
+          if (id.length < 1) throw "";
+      } catch (_) {
+          return res.status(400).send({ message: "Id is a mandatory field!" });
+      }
+
+      const contract = await getContract(req.org, req.channel);
+      const result = await contract.submitTransaction(
+          "GetBankAccount", id
+      );
+
+      try {
+          return res.send(prettyJSONString(result));
+      } catch (e) {
+          return res.send({ result: prettyJSONString(result) });
+      }
+  } catch (e) {
+      console.error(`Error occurred: ${e}`);
+      res.status(500).send("Method invoke failed!");
+  }
+});
+
 router.post("/create-bank-account", async (req, res) => {
   /* 
     #swagger.parameters['org'] = {
         in: 'query',                            
-        required: true,                     
+        required: false,                     
         type: 'integer'
 
     } 
 
     #swagger.parameters['channel'] = {
         in: 'query',                            
-        required: true,                     
+        required: false,                     
         type: 'integer'
     } 
 
-    #swagger.parameters['id'] = {
+    #swagger.parameters['body'] = {
         in: 'body',
         required: true,
-        type: 'integer',
-        format: 'int64'
+        type: 'object',
+        schema: { 
+            id: 1,
+            personId: 1,
+            bankId: 1,
+            balance: 1,
+            currency: 'EUR'
+        }
     }
-
-    #swagger.parameters['bankId'] = {
-        in: 'body',
-        required: true,
-        type: 'integer',
-        format: 'int64'
-    }
-
-    #swagger.parameters['personId'] = {
-        in: 'body',
-        required: true,
-        type: 'integer',
-        format: 'int64'
-    }
-
-    #swagger.parameters['balance'] = {
-        in: 'body',
-        required: true,
-        type: 'integer',
-        format: 'int64'
-    }
-
-    #swagger.parameters['currency'] = {
-        in: 'body',
-        required: true,
-        type: 'string',
-        format: 'string'
-    }
-
     */
   try {
     let id;
@@ -65,35 +89,35 @@ router.post("/create-bank-account", async (req, res) => {
 	  let currency;
 
     try {
-      id = req.body["id"];
+      id = req.body.id;
       if (id.length < 1) throw "";
     } catch (_) {
       return res.status(400).send({ message: "id is a mandatory field!" });
     }
 
     try {
-      personId = req.body["personId"];
+      personId = req.body.personId;
       if (personId.length < 1) throw "";
     } catch (_) {
       return res.status(400).send({ message: "personId is a mandatory field!" });
     }
 
     try {
-      bankId = req.body["bankId"];
+      bankId = req.body.bankId;
       if (bankId.length < 1) throw "";
     } catch (_) {
       return res.status(400).send({ message: "bankId is a mandatory field!" });
     }
 
     try {
-      balance = req.body["balance"];
+      balance = req.body.balance;
       if (balance.length < 1) throw "";
     } catch (_) {
       return res.status(400).send({ message: "balance is a mandatory field!" });
     }
 
     try {
-      currency = req.body["currency"];
+      currency = req.body.currency;
       if (currency.length < 1) throw "";
     } catch (_) {
       return res.status(400).send({ message: "currency is a mandatory field!" });
@@ -123,43 +147,28 @@ router.post("/transfer-funds", async (req, res) => {
   /* 
     #swagger.parameters['org'] = {
         in: 'query',                            
-        required: true,                     
+        required: false,                     
         type: 'integer'
 
     } 
 
     #swagger.parameters['channel'] = {
         in: 'query',                            
-        required: true,                     
+        required: false,                     
         type: 'integer'
     } 
 
-    #swagger.parameters['fromAccountId'] = {
+    #swagger.parameters['body'] = {
         in: 'body',
         required: true,
-        type: 'integer',
-        format: 'int64'
+        type: 'object',
+        schema: { 
+            fromAccountId: 1,
+            toAccountId: 1,
+            amount: 1,
+            convert: false
+        }
     }
-
-    #swagger.parameters['toAccountId'] = {
-        in: 'body',
-        required: true,
-        type: 'integer',
-        format: 'int64'
-    }
-
-    #swagger.parameters['amount'] = {
-        in: 'body',
-        required: true,
-        type: 'number'
-    }
-
-    #swagger.parameters['convert'] = {
-        in: 'body',
-        required: true,
-        type: 'bool'
-    }
-
     */
   try {
     let fromAccountId;
@@ -168,28 +177,29 @@ router.post("/transfer-funds", async (req, res) => {
     let convert;
 
     try {
-      fromAccountId = req.body["fromAccountId"];
+      fromAccountId = req.body.fromAccountId;
       if (fromAccountId.length < 1) throw "";
     } catch (_) {
       return res.status(400).send({ message: "FromAccountId is a mandatory field!" });
     }
 
     try {
-      toAccountId = req.body["toAccountId"];
+      toAccountId = req.body.toAccountId;
       if (toAccountId.length < 1) throw "";
     } catch (_) {
       return res.status(400).send({ message: "ToAccountId is a mandatory field!" });
     }
 
     try {
-      amount = req.body["amount"];
+      amount = req.body.amount;
       if (amount.length < 1) throw "";
     } catch (_) {
       return res.status(400).send({ message: "Amount is a mandatory field!" });
     }
 
     try {
-      convert = req.body["convert"];
+      
+      convert = req.body.convert;
       if (convert.length < 1) throw "";
     } catch (_) {
       return res.status(400).send({ message: "Convert is a mandatory field!" });
@@ -203,8 +213,10 @@ router.post("/transfer-funds", async (req, res) => {
       toAccountId
     );
 
+    const isSameCurrency = sameCurrency.toString().includes("true");
+
     try {
-      if(!sameCurrency && !convert)
+      if(!isSameCurrency && !convert)
       return res.status(400).send({ message: "Accounts have different currencies!" });
     } catch (e) {
       return res.send({ result: prettyJSONString(result) });
@@ -243,32 +255,29 @@ router.post("/withdraw-funds", async (req, res) => {
         type: 'integer'
     }
 
-    #swagger.parameters['accountId'] = {
-        in: 'body',                            
-        required: true,                     
-        type: 'integer'
+    #swagger.parameters['body'] = {
+        in: 'body',
+        required: true,
+        type: 'object',
+        schema: { 
+            accountId: 1,
+            amount: 1
+        }
     }
-
-    #swagger.parameters['amount'] = {
-        in: 'body',                            
-        required: true,                     
-        type: 'number'
-    }
-
     */
   try {
     let accountId;
     let amount;
 
     try {
-      accountId = req.body["accountId"];
+      accountId = req.body.accountId;
       if (accountId.length < 1) throw "";
     } catch (_) {
       return res.status(400).send({ message: "AccountId is a mandatory field!" });
     }
 
     try {
-      amount = req.body["amount"];
+      amount = req.body.amount;
       if (amount.length < 1) throw "";
     } catch (_) {
       return res.status(400).send({ message: "Amount is a mandatory field!" });
@@ -304,24 +313,16 @@ router.post("/deposit-funds", async (req, res) => {
         type: 'integer'
     }
 
-    #swagger.parameters['accountId'] = {
-        in: 'body',                            
-        required: true,                     
-        type: 'integer'
+    #swagger.parameters['body'] = {
+        in: 'body',
+        required: true,
+        type: 'object',
+        schema: { 
+            accountId: 1,
+            currency: 'EUR',
+            amount: 1
+        }
     }
-
-    #swagger.parameters['currency'] = {
-        in: 'body',                            
-        required: true,                     
-        type: 'string'
-    }
-
-    #swagger.parameters['amount'] = {
-        in: 'body',                            
-        required: true,                     
-        type: 'number'
-    }
-
     */
   try {
     let accountId;
@@ -329,21 +330,21 @@ router.post("/deposit-funds", async (req, res) => {
     let amount;
 
     try {
-      accountId = req.body["accountId"];
+      accountId = req.body.accountId;
       if (accountId.length < 1) throw "";
     } catch (_) {
       return res.status(400).send({ message: "AccountId is a mandatory field!" });
     }
 
     try {
-      currency = req.body["currency"];
+      currency = req.body.currency;
       if (currency.length < 1) throw "";
     } catch (_) {
       return res.status(400).send({ message: "Currency is a mandatory field!" });
     }
 
     try {
-      amount = req.body["amount"];
+      amount = req.body.amount;
       if (amount.length < 1) throw "";
     } catch (_) {
       return res.status(400).send({ message: "Amount is a mandatory field!" });
@@ -382,32 +383,29 @@ router.post("/check-account-currencies", async (req, res) => {
         type: 'integer'
     }
 
-    #swagger.parameters['fromAccountId'] = {
-        in: 'body',                            
-        required: true,                     
-        type: 'integer'
+    #swagger.parameters['body'] = {
+        in: 'body',
+        required: true,
+        type: 'object',
+        schema: { 
+            fromAccountId: 1,
+            recipientId: 1
+        }
     }
-
-    #swagger.parameters['recipientId'] = {
-        in: 'body',                            
-        required: true,                     
-        type: 'integer'
-    }
-
     */
   try {
     let fromAccountId;
     let recipientId;
 
     try {
-      fromAccountId = req.body["fromAccountId"];
+      fromAccountId = req.body.fromAccountId;
       if (fromAccountId.length < 1) throw "";
     } catch (_) {
       return res.status(400).send({ message: "fromAccountId is a mandatory field!" });
     }
 
     try {
-      recipientId = req.body["recipientId"];
+      recipientId = req.body.recipientId;
       if (recipientId.length < 1) throw "";
     } catch (_) {
       return res.status(400).send({ message: "recipientId is a mandatory field!" });
@@ -445,11 +443,10 @@ router.get("/search-bank-accounts-by-person", async (req, res) => {
     }
 
     #swagger.parameters['personId'] = {
-        in: 'body',                            
+        in: 'query',                            
         required: true,                     
         type: 'integer'
     }
-
     */
   try {
       let personId;
@@ -463,52 +460,6 @@ router.get("/search-bank-accounts-by-person", async (req, res) => {
       const contract = await getContract(req.org, req.channel);
       const result = await contract.submitTransaction(
           "GetBankAccountsByPerson", personId
-      );
-
-      try {
-          return res.send(prettyJSONString(result));
-      } catch (e) {
-          return res.send({ result: prettyJSONString(result) });
-      }
-  } catch (e) {
-      console.error(`Error occurred: ${e}`);
-      res.status(500).send("Method invoke failed!");
-  }
-});
-
-router.get("/search-bank-accounts-by-bank", async (req, res) => {
-  /* #swagger.parameters['org'] = {
-        in: 'query',                            
-        required: false,                     
-        type: 'integer'
-
-    }
-
-    #swagger.parameters['channel'] = {
-        in: 'query',                            
-        required: false,                     
-        type: 'integer'
-    }
-
-    #swagger.parameters['bankId'] = {
-        in: 'body',                            
-        required: true,                     
-        type: 'integer'
-    }
-
-    */
-  try {
-      let bankId;
-
-      try {
-          bankId = req.query.bankId;
-      } catch (_) {
-          return res.status(400).send({ message: "BankId is a mandatory field!" });
-      }
-
-      const contract = await getContract(req.org, req.channel);
-      const result = await contract.submitTransaction(
-          "GetBankAccountsByBank", bankId
       );
 
       try {

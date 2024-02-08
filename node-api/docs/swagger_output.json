@@ -43,11 +43,6 @@
         "description": "",
         "parameters": [
           {
-            "name": "length",
-            "in": "query",
-            "type": "string"
-          },
-          {
             "name": "org",
             "in": "query",
             "required": false,
@@ -86,54 +81,39 @@
           {
             "name": "org",
             "in": "query",
-            "required": true,
+            "required": false,
             "type": "integer"
           },
           {
             "name": "channel",
             "in": "query",
-            "required": true,
+            "required": false,
             "type": "integer"
           },
           {
-            "name": "id",
+            "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
-                "length": {
-                  "example": "any"
+                "id": {
+                  "type": "number",
+                  "example": 1
+                },
+                "location": {
+                  "type": "string",
+                  "example": "Novi Sad"
+                },
+                "pib": {
+                  "type": "string",
+                  "example": "123456789"
+                },
+                "foundationYear": {
+                  "type": "number",
+                  "example": 1990
                 }
               }
-            },
-            "required": true,
-            "format": "int64"
-          },
-          {
-            "name": "location",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          {
-            "name": "pib",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          {
-            "name": "foundationYear",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {}
             }
           }
         ],
@@ -155,31 +135,23 @@
         "description": "",
         "parameters": [
           {
-            "name": "year",
-            "in": "query",
-            "type": "string"
-          },
-          {
             "name": "org",
             "in": "query",
-            "required": true,
+            "required": false,
             "type": "integer"
           },
           {
             "name": "channel",
             "in": "query",
-            "required": true,
+            "required": false,
             "type": "integer"
           },
           {
             "name": "year",
-            "in": "body",
+            "in": "query",
             "required": true,
-            "format": "int64",
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
+            "type": "integer",
+            "format": "string"
           }
         ],
         "responses": {
@@ -200,31 +172,59 @@
         "description": "",
         "parameters": [
           {
-            "name": "location",
-            "in": "query",
-            "type": "string"
-          },
-          {
             "name": "org",
             "in": "query",
-            "required": true,
+            "required": false,
             "type": "integer"
           },
           {
             "name": "channel",
             "in": "query",
-            "required": true,
+            "required": false,
             "type": "integer"
           },
           {
             "name": "location",
-            "in": "body",
+            "in": "query",
             "required": true,
-            "format": "string",
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
+            "type": "string",
+            "format": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/get-bank-account": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "type": "integer"
           }
         ],
         "responses": {
@@ -247,67 +247,43 @@
           {
             "name": "org",
             "in": "query",
-            "required": true,
+            "required": false,
             "type": "integer"
           },
           {
             "name": "channel",
             "in": "query",
-            "required": true,
+            "required": false,
             "type": "integer"
           },
           {
-            "name": "id",
+            "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
-                "length": {
-                  "example": "any"
+                "id": {
+                  "type": "number",
+                  "example": 1
+                },
+                "personId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "bankId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "balance": {
+                  "type": "number",
+                  "example": 1
+                },
+                "currency": {
+                  "type": "string",
+                  "example": "EUR"
                 }
               }
-            },
-            "required": true,
-            "format": "int64"
-          },
-          {
-            "name": "bankId",
-            "in": "body",
-            "required": true,
-            "format": "int64",
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          {
-            "name": "personId",
-            "in": "body",
-            "required": true,
-            "format": "int64",
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          {
-            "name": "balance",
-            "in": "body",
-            "required": true,
-            "format": "int64",
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          {
-            "name": "currency",
-            "in": "body",
-            "required": true,
-            "format": "string",
-            "schema": {
-              "type": "object",
-              "properties": {}
             }
           }
         ],
@@ -331,55 +307,39 @@
           {
             "name": "org",
             "in": "query",
-            "required": true,
+            "required": false,
             "type": "integer"
           },
           {
             "name": "channel",
             "in": "query",
-            "required": true,
+            "required": false,
             "type": "integer"
           },
           {
-            "name": "fromAccountId",
+            "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
-                "length": {
-                  "example": "any"
+                "fromAccountId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "toAccountId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "amount": {
+                  "type": "number",
+                  "example": 1
+                },
+                "convert": {
+                  "type": "boolean",
+                  "example": false
                 }
               }
-            },
-            "required": true,
-            "format": "int64"
-          },
-          {
-            "name": "toAccountId",
-            "in": "body",
-            "required": true,
-            "format": "int64",
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          {
-            "name": "amount",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          {
-            "name": "convert",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {}
             }
           }
         ],
@@ -413,25 +373,21 @@
             "type": "integer"
           },
           {
-            "name": "accountId",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "length": {
-                  "example": "any"
-                }
-              }
-            },
-            "required": true
-          },
-          {
-            "name": "amount",
+            "name": "body",
             "in": "body",
             "required": true,
             "schema": {
               "type": "object",
-              "properties": {}
+              "properties": {
+                "accountId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "amount": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
             }
           }
         ],
@@ -465,34 +421,25 @@
             "type": "integer"
           },
           {
-            "name": "accountId",
+            "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
-                "length": {
-                  "example": "any"
+                "accountId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "currency": {
+                  "type": "string",
+                  "example": "EUR"
+                },
+                "amount": {
+                  "type": "number",
+                  "example": 1
                 }
               }
-            },
-            "required": true
-          },
-          {
-            "name": "currency",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          {
-            "name": "amount",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {}
             }
           }
         ],
@@ -526,25 +473,21 @@
             "type": "integer"
           },
           {
-            "name": "fromAccountId",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "length": {
-                  "example": "any"
-                }
-              }
-            },
-            "required": true
-          },
-          {
-            "name": "recipientId",
+            "name": "body",
             "in": "body",
             "required": true,
             "schema": {
               "type": "object",
-              "properties": {}
+              "properties": {
+                "fromAccountId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "recipientId": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
             }
           }
         ],
@@ -566,11 +509,6 @@
         "description": "",
         "parameters": [
           {
-            "name": "personId",
-            "in": "query",
-            "type": "string"
-          },
-          {
             "name": "org",
             "in": "query",
             "required": false,
@@ -584,56 +522,9 @@
           },
           {
             "name": "personId",
-            "in": "body",
+            "in": "query",
             "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/search-bank-accounts-by-bank": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "bankId",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "org",
-            "in": "query",
-            "required": false,
             "type": "integer"
-          },
-          {
-            "name": "channel",
-            "in": "query",
-            "required": false,
-            "type": "integer"
-          },
-          {
-            "name": "bankId",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
           }
         ],
         "responses": {
@@ -654,13 +545,35 @@
         "description": "",
         "parameters": [
           {
+            "name": "org",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
-                "length": {
-                  "example": "any"
+                "id": {
+                  "type": "number",
+                  "example": 1
+                },
+                "cardNumber": {
+                  "type": "string",
+                  "example": "1234567890"
+                },
+                "bankAccountId": {
+                  "type": "number",
+                  "example": 1
                 }
               }
             }
@@ -681,13 +594,31 @@
         "description": "",
         "parameters": [
           {
+            "name": "org",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
-                "length": {
-                  "example": "any"
+                "id": {
+                  "type": "number",
+                  "example": 1
+                },
+                "bankAccountId": {
+                  "type": "number",
+                  "example": 1
                 }
               }
             }
@@ -783,37 +714,27 @@
             "type": "integer"
           },
           {
-            "name": "id",
-            "in": "query",
-            "required": true,
-            "type": "integer"
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "surname",
-            "in": "query",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "email",
-            "in": "query",
-            "required": true,
-            "type": "string"
-          },
-          {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
-                "length": {
-                  "example": "any"
+                "id": {
+                  "type": "number",
+                  "example": 1
+                },
+                "name": {
+                  "type": "string",
+                  "example": "John"
+                },
+                "surname": {
+                  "type": "string",
+                  "example": "Doe"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "jdoe@gmail.com"
                 }
               }
             }
@@ -931,6 +852,42 @@
             "in": "query",
             "required": true,
             "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/get-person-by-bank-account": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "bankAccountId",
+            "in": "query",
+            "required": true,
+            "type": "integer"
           }
         ],
         "responses": {

@@ -1,5 +1,5 @@
 const prettyJSONString = (input) => {
-	return JSON.stringify(JSON.parse(input.toString()), null, 2);
+	return (input == undefined ? "No data" : JSON.stringify(JSON.parse(input.toString()), null, 2));
 }
 
 module.exports = {

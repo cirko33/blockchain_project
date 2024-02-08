@@ -22,7 +22,7 @@ router.get("/get-all-banks", async (req, res) => {
 
     */
     try {
-        const contract = await getContract(req.query.org, req.query.channel);
+        const contract = await getContract(req.org, req.channel);
         const result = await contract.submitTransaction(
             "GetAllBanks"
         );
@@ -63,7 +63,7 @@ router.get("/get-bank", async (req, res) => {
         let id;
 
         try {
-            id = req.query["id"];
+            id = req.query.id;
             if (id.length < 1) throw "";
         } catch (_) {
             return res.status(400).send({ message: "Id is a mandatory field!" });
@@ -89,38 +89,26 @@ router.post("/create-bank", async (req, res) => {
     /* 
     #swagger.parameters['org'] = {
         in: 'query',                            
-        required: true,                     
+        required: false,                     
         type: 'integer'
-
     } 
 
     #swagger.parameters['channel'] = {
         in: 'query',                            
-        required: true,                     
+        required: false,                     
         type: 'integer'
     } 
 
-    #swagger.parameters['id'] = {
+    #swagger.parameters['body'] = {
         in: 'body',
         required: true,
-        type: 'integer',
-        format: 'int64'
-    }
-
-    #swagger.parameters['location'] = {
-        in: 'body',
-        required: true
-    }
-
-    #swagger.parameters['pib'] = {
-        in: 'body',
-        required: true
-    }
-
-    #swagger.parameters['foundationYear'] = {
-        in: 'body',
-        required: true,
-        type: 'integer'
+        type: 'object',
+        schema: { 
+            id: 1,
+            location: "Novi Sad",
+            pib: "123456789",
+            foundationYear: 1990
+        }
     }
 
     */
@@ -130,13 +118,13 @@ router.post("/create-bank", async (req, res) => {
         let pib;
 
         try {
-            id = req.body["id"];
+            id = parseInt(req.body.id);
             if (id.length < 1) throw "";
-            location = req.body["location"]
+            location = req.body.location;
             if (location.length < 1) throw "";
-            pib = req.body["pib"]
+            pib = req.body.pib;
             if (pib.length < 1) throw "";
-            foundationYear = req.body["foundationYear"]
+            foundationYear = req.body.foundationYear;
             if (foundationYear.length < 1) throw "";
 
         } catch (_) {
@@ -163,22 +151,22 @@ router.get("/search-banks-older-than", async (req, res) => {
     /* 
     #swagger.parameters['org'] = {
         in: 'query',                            
-        required: true,                     
+        required: false,                     
         type: 'integer'
 
     } 
 
     #swagger.parameters['channel'] = {
         in: 'query',                            
-        required: true,                     
+        required: false,                     
         type: 'integer'
-    } 
+    }
 
     #swagger.parameters['year'] = {
-        in: 'body',
+        in: 'query',
         required: true,
         type: 'integer',
-        format: 'int64'
+        format: 'string'
     }
 
     */
@@ -211,19 +199,19 @@ router.get("/search-banks-by-location", async (req, res) => {
     /* 
     #swagger.parameters['org'] = {
         in: 'query',                            
-        required: true,                     
+        required: false,                     
         type: 'integer'
 
     } 
 
     #swagger.parameters['channel'] = {
         in: 'query',                            
-        required: true,                     
+        required: false,                     
         type: 'integer'
     } 
 
     #swagger.parameters['location'] = {
-        in: 'body',
+        in: 'query',
         required: true,
         type: 'string',
         format: 'string'

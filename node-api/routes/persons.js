@@ -99,30 +99,16 @@ router.post("/create-person", async (req, res) => {
         type: 'integer'
     }
 
-    #swagger.parameters['id'] = {
-        in: 'query',                            
+    #swagger.parameters['body'] = {
+        in: 'body',                            
         required: true,                     
-        type: 'integer'
+        schema: { 
+            id: 1,
+            name: "John",
+            surname: "Doe",
+            email: "jdoe@gmail.com"
+        }
     }
-
-    #swagger.parameters['name'] = {
-        in: 'query',                            
-        required: true,                     
-        type: 'string'
-    }
-
-    #swagger.parameters['surname'] = {
-        in: 'query',                            
-        required: true,                     
-        type: 'string'
-    }
-
-    #swagger.parameters['email'] = {
-        in: 'query',                            
-        required: true,                     
-        type: 'string'
-    }
-
     */
     try {
         let id;
@@ -131,13 +117,13 @@ router.post("/create-person", async (req, res) => {
         let email;
 
         try {
-            id = req.body["id"];
+            id = req.body.id;
             if (id.length < 1) throw "";
-            name = req.body["name"];
+            name = req.body.name;
             if (name.length < 1) throw "";
-            surname = req.body["surname"];
+            surname = req.body.surname;
             if (surname.length < 1) throw "";
-            email = req.body["email"];
+            email = req.body.email;
             if (email.length < 1) throw "";
         } catch (_) {
             return res.status(400).send({ message: "Id, name, surname, and email are mandatory fields!" });
@@ -292,6 +278,52 @@ router.get("/search-persons-by-surname-email", async (req, res) => {
         const contract = await getContract(req.org, req.channel);
         const result = await contract.submitTransaction(
             "SearchPersonsBySurnameAndEmail", surname, email
+        );
+
+        try {
+            return res.send(prettyJSONString(result));
+        } catch (e) {
+            return res.send({ result: prettyJSONString(result) });
+        }
+    } catch (e) {
+        console.error(`Error occurred: ${e}`);
+        res.status(500).send("Method invoke failed!");
+    }
+});
+
+router.get("/get-person-by-bank-account", async (req, res) => {
+    /* #swagger.parameters['org'] = {
+        in: 'query',                            
+        required: false,                     
+        type: 'integer'
+
+    }
+
+    #swagger.parameters['channel'] = {
+        in: 'query',                            
+        required: false,                     
+        type: 'integer'
+    }
+
+    #swagger.parameters['bankAccountId'] = {
+        in: 'query',                            
+        required: true,                     
+        type: 'integer'
+    }
+
+    */
+    try {
+        let bankAccountId;
+
+        try {
+            bankAccountId = req.query.bankAccountId;
+        } catch (_) {
+            return res.status(400).send({ message: "BankAccountId is a mandatory field!" });
+        }
+
+        const contract = await getContract(req.org, req.channel);
+        const result = await contract.submitTransaction(
+            "GetPersonByBankAccount", bankAccountId
         );
 
         try {
