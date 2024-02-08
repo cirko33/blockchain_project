@@ -18,17 +18,22 @@
           {
             "name": "org",
             "in": "query",
+            "required": false,
             "type": "integer"
           },
           {
             "name": "channel",
             "in": "query",
+            "required": false,
             "type": "integer"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -38,19 +43,27 @@
         "description": "",
         "parameters": [
           {
+            "name": "length",
+            "in": "query",
+            "type": "string"
+          },
+          {
             "name": "org",
             "in": "query",
+            "required": false,
             "type": "integer"
           },
           {
             "name": "channel",
             "in": "query",
+            "required": false,
             "type": "integer"
           },
           {
             "name": "id",
             "in": "query",
-            "type": "string"
+            "required": true,
+            "type": "integer"
           }
         ],
         "responses": {
@@ -59,6 +72,9 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -70,15 +86,17 @@
           {
             "name": "org",
             "in": "query",
+            "required": true,
             "type": "integer"
           },
           {
             "name": "channel",
             "in": "query",
+            "required": true,
             "type": "integer"
           },
           {
-            "name": "body",
+            "name": "id",
             "in": "body",
             "schema": {
               "type": "object",
@@ -87,6 +105,35 @@
                   "example": "any"
                 }
               }
+            },
+            "required": true,
+            "format": "int64"
+          },
+          {
+            "name": "location",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          {
+            "name": "pib",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          {
+            "name": "foundationYear",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
             }
           }
         ],
@@ -96,6 +143,99 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/search-banks-older-than": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "org",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "year",
+            "in": "body",
+            "required": true,
+            "format": "int64",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/search-banks-by-location": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "location",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "org",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "location",
+            "in": "body",
+            "required": true,
+            "format": "string",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -107,15 +247,17 @@
           {
             "name": "org",
             "in": "query",
+            "required": true,
             "type": "integer"
           },
           {
             "name": "channel",
             "in": "query",
+            "required": true,
             "type": "integer"
           },
           {
-            "name": "body",
+            "name": "id",
             "in": "body",
             "schema": {
               "type": "object",
@@ -124,6 +266,48 @@
                   "example": "any"
                 }
               }
+            },
+            "required": true,
+            "format": "int64"
+          },
+          {
+            "name": "bankId",
+            "in": "body",
+            "required": true,
+            "format": "int64",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          {
+            "name": "personId",
+            "in": "body",
+            "required": true,
+            "format": "int64",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          {
+            "name": "balance",
+            "in": "body",
+            "required": true,
+            "format": "int64",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          {
+            "name": "currency",
+            "in": "body",
+            "required": true,
+            "format": "string",
+            "schema": {
+              "type": "object",
+              "properties": {}
             }
           }
         ],
@@ -133,6 +317,9 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -144,15 +331,17 @@
           {
             "name": "org",
             "in": "query",
+            "required": true,
             "type": "integer"
           },
           {
             "name": "channel",
             "in": "query",
+            "required": true,
             "type": "integer"
           },
           {
-            "name": "body",
+            "name": "fromAccountId",
             "in": "body",
             "schema": {
               "type": "object",
@@ -161,6 +350,36 @@
                   "example": "any"
                 }
               }
+            },
+            "required": true,
+            "format": "int64"
+          },
+          {
+            "name": "toAccountId",
+            "in": "body",
+            "required": true,
+            "format": "int64",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          {
+            "name": "amount",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          {
+            "name": "convert",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
             }
           }
         ],
@@ -170,6 +389,9 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -181,15 +403,17 @@
           {
             "name": "org",
             "in": "query",
+            "required": false,
             "type": "integer"
           },
           {
             "name": "channel",
             "in": "query",
+            "required": false,
             "type": "integer"
           },
           {
-            "name": "body",
+            "name": "accountId",
             "in": "body",
             "schema": {
               "type": "object",
@@ -198,6 +422,16 @@
                   "example": "any"
                 }
               }
+            },
+            "required": true
+          },
+          {
+            "name": "amount",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
             }
           }
         ],
@@ -207,6 +441,9 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -218,13 +455,204 @@
           {
             "name": "org",
             "in": "query",
+            "required": false,
             "type": "integer"
           },
           {
             "name": "channel",
             "in": "query",
+            "required": false,
             "type": "integer"
           },
+          {
+            "name": "accountId",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "length": {
+                  "example": "any"
+                }
+              }
+            },
+            "required": true
+          },
+          {
+            "name": "currency",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          {
+            "name": "amount",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/check-account-currencies": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "fromAccountId",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "length": {
+                  "example": "any"
+                }
+              }
+            },
+            "required": true
+          },
+          {
+            "name": "recipientId",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/search-bank-accounts-by-person": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "personId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "org",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "personId",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/search-bank-accounts-by-bank": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "bankId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "org",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "bankId",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/create-card": {
+      "post": {
+        "description": "",
+        "parameters": [
           {
             "name": "body",
             "in": "body",
@@ -248,20 +676,10 @@
         }
       }
     },
-    "/check-account-currencies": {
-      "patch": {
+    "/remove-card": {
+      "post": {
         "description": "",
         "parameters": [
-          {
-            "name": "org",
-            "in": "query",
-            "type": "integer"
-          },
-          {
-            "name": "channel",
-            "in": "query",
-            "type": "integer"
-          },
           {
             "name": "body",
             "in": "body",
@@ -288,9 +706,26 @@
     "/get-all-persons": {
       "get": {
         "description": "",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -302,17 +737,20 @@
           {
             "name": "org",
             "in": "query",
+            "required": false,
             "type": "integer"
           },
           {
             "name": "channel",
             "in": "query",
+            "required": false,
             "type": "integer"
           },
           {
             "name": "id",
             "in": "query",
-            "type": "string"
+            "required": true,
+            "type": "integer"
           }
         ],
         "responses": {
@@ -321,6 +759,9 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -332,12 +773,38 @@
           {
             "name": "org",
             "in": "query",
+            "required": false,
             "type": "integer"
           },
           {
             "name": "channel",
             "in": "query",
+            "required": false,
             "type": "integer"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "surname",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "type": "string"
           },
           {
             "name": "body",
@@ -358,6 +825,123 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/search-persons-by-name": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/search-persons-by-surname": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "surname",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/search-persons-by-surname-email": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "surname",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }

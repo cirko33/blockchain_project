@@ -44,13 +44,13 @@ router.get("/get-bank", async (req, res) => {
         required: false,                     
         type: 'integer'
 
-    } 
+    }
 
     #swagger.parameters['channel'] = {
         in: 'query',                            
         required: false,                     
         type: 'integer'
-    } 
+    }
 
     #swagger.parameters['id'] = {
         in: 'query',                            
@@ -86,41 +86,41 @@ router.get("/get-bank", async (req, res) => {
 });
 
 router.post("/create-bank", async (req, res) => {
-    /* #swagger.parameters['org'] = {
+    /* 
+    #swagger.parameters['org'] = {
         in: 'query',                            
-        required: false,                     
+        required: true,                     
         type: 'integer'
 
     } 
 
     #swagger.parameters['channel'] = {
         in: 'query',                            
-        required: false,                     
+        required: true,                     
         type: 'integer'
     } 
 
-    #swagger.parameters['body'] = {
+    #swagger.parameters['id'] = {
         in: 'body',
         required: true,
-        type: 'object',
-        schema: {
-            id: {
-                type: 'integer',
-                required: true
-            },
-            location: {
-                type: 'string',
-                required: true
-            },
-            pib: {
-                type: 'string',
-                required: true
-            },
-            foundationYear: {
-                type: 'integer',
-                required: true
-            }
-        }
+        type: 'integer',
+        format: 'int64'
+    }
+
+    #swagger.parameters['location'] = {
+        in: 'body',
+        required: true
+    }
+
+    #swagger.parameters['pib'] = {
+        in: 'body',
+        required: true
+    }
+
+    #swagger.parameters['foundationYear'] = {
+        in: 'body',
+        required: true,
+        type: 'integer'
     }
 
     */
@@ -146,6 +146,102 @@ router.post("/create-bank", async (req, res) => {
         const contract = await getContract(req.org, req.channel);
         const result = await contract.submitTransaction(
             "CreateBank", id, location, pib, foundationYear
+        );
+
+        try {
+            return res.send(prettyJSONString(result));
+        } catch (e) {
+            return res.send({ result: prettyJSONString(result) });
+        }
+    } catch (e) {
+        console.error(`Error occurred: ${e}`);
+        res.status(500).send("Method invoke failed!");
+    }
+});
+
+router.get("/search-banks-older-than", async (req, res) => {
+    /* 
+    #swagger.parameters['org'] = {
+        in: 'query',                            
+        required: true,                     
+        type: 'integer'
+
+    } 
+
+    #swagger.parameters['channel'] = {
+        in: 'query',                            
+        required: true,                     
+        type: 'integer'
+    } 
+
+    #swagger.parameters['year'] = {
+        in: 'body',
+        required: true,
+        type: 'integer',
+        format: 'int64'
+    }
+
+    */
+    try {
+        let year;
+
+        try {
+            year = req.query.year;
+        } catch (_) {
+            return res.status(400).send({ message: "Year is a mandatory field!" });
+        }
+
+        const contract = await getContract(req.org, req.channel);
+        const result = await contract.submitTransaction(
+            "GetBanksOlderThan", year
+        );
+
+        try {
+            return res.send(prettyJSONString(result));
+        } catch (e) {
+            return res.send({ result: prettyJSONString(result) });
+        }
+    } catch (e) {
+        console.error(`Error occurred: ${e}`);
+        res.status(500).send("Method invoke failed!");
+    }
+});
+
+router.get("/search-banks-by-location", async (req, res) => {
+    /* 
+    #swagger.parameters['org'] = {
+        in: 'query',                            
+        required: true,                     
+        type: 'integer'
+
+    } 
+
+    #swagger.parameters['channel'] = {
+        in: 'query',                            
+        required: true,                     
+        type: 'integer'
+    } 
+
+    #swagger.parameters['location'] = {
+        in: 'body',
+        required: true,
+        type: 'string',
+        format: 'string'
+    }
+
+    */
+    try {
+        let location;
+
+        try {
+            location = req.query.location;
+        } catch (_) {
+            return res.status(400).send({ message: "Location is a mandatory field!" });
+        }
+
+        const contract = await getContract(req.org, req.channel);
+        const result = await contract.submitTransaction(
+            "GetBanksByLocation", location
         );
 
         try {
