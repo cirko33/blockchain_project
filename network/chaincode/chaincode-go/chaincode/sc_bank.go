@@ -7,7 +7,7 @@ import (
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
-func (s *SmartContract) CreateBank(ctx contractapi.TransactionContextInterface, id int64, location string, pib string) (*Bank, error) {
+func (s *SmartContract) CreateBank(ctx contractapi.TransactionContextInterface, id int64, location string, pib string, foundationYear uint32) (*Bank, error) {
 	exists, err := s.EntityExists(ctx, BANK_TYPE_NAME, id)
 	if err != nil {
 		return nil, err
@@ -19,9 +19,10 @@ func (s *SmartContract) CreateBank(ctx contractapi.TransactionContextInterface, 
 
 	newId := ToBankId(id)
 	newBank := Bank{
-		Id:       newId,
-		Location: location,
-		PIB:      pib,
+		Id:             newId,
+		Location:       location,
+		PIB:            pib,
+		FoundationYear: foundationYear,
 	}
 
 	bankJSON, err := json.Marshal(newBank)

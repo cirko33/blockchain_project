@@ -56,7 +56,7 @@ func BuildMockBank(id int64) Bank {
 		Id:             bank_id,
 		Location:       fmt.Sprintf("Location_%d", id),
 		PIB:            fmt.Sprintf("PIB_%d", id),
-		FoundationYear: int(rand.Intn(50) + 1950),
+		FoundationYear: uint32(rand.Intn(50) + 1950),
 	}
 }
 
