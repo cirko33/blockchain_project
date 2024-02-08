@@ -1,85 +1,100 @@
 const dotenv = require("dotenv");
 const { Gateway } = require("fabric-network");
 const path = require("path");
-const { buildCAClient, registerAndEnrollUser, enrollAdmin } = require("./ca");
+const { buildCAClient, registerAndEnrollUser, enrollUser } = require("./ca");
 const { buildCCPOrg, buildWallet } = require("./org");
 
 dotenv.config({ path: path.resolve("env", "development.env") });
 const env = process.env;
 
-const channelName = env["CHANNEL_NAME"] || "channel1";
-const chaincodeName = env["CHAINCODE_NAME"] || "basic1";
-const organizationId = parseInt(env["ORGANIZATION_ID"] || "1");
-const mspOrg = `Org${organizationId}MSP`;
-const walletPath = path.join(__dirname, env["WALLET_PATH"] || "wallet");
-const orgUserId = env["ORGANIZATION_USER_ID"] || "appUser";
-const affiliation = env["AFFILIATION"] || `manufacturer.department1`;
+const numOfOrgs = parseInt(env["NUM_OF_ORGS"]) || 4;
+const numOfChannels = parseInt(env["NUM_OF_CHANNELS"]) || 2;
 
-let contract = null;
-let gateway = null;
-let network = null;
+const orgUserId = env["CA_USER"] || "user1";
 
-const getGateway = async () => {
-  if (gateway != null) {
-    return gateway;
+let contracts = [];
+let gateways = [];
+let networks = [];
+
+const getGateway = async (orgNum, channelNum) => {
+
+  if (gateways != null && gateways.length > 0) {
+    return gateways[(channelNum - 1) * numOfOrgs + orgNum - 1];
   }
 
   try {
-    const ccp = buildCCPOrg(organizationId);
-    const caClient = buildCAClient(ccp, `ca.org${organizationId}.example.com`);
-    const wallet = await buildWallet(walletPath);
-    await enrollAdmin(caClient, wallet, mspOrg);
-    await registerAndEnrollUser(
-      caClient,
-      wallet,
-      mspOrg,
-      orgUserId,
-      affiliation
-    );
-    gateway = new Gateway();
+    const wallet = await buildWallet();
+    for (let i = 1; i <= numOfChannels; i++) {
+      for (let j = 1; j <= numOfOrgs; j++) {
+        const ccp = buildCCPOrg(j);
+        const caClient = buildCAClient(ccp, `ca.org${j}.example.com`);
+        await enrollUser(caClient, wallet, `Org${j}MSP`);
 
-    try {
-      await gateway.connect(ccp, {
-        wallet,
-        identity: orgUserId,
-        discovery: { enabled: true, asLocalhost: true },
-      });
-    } catch (error) {
-      console.error(`Failed to connect: ${error}`);
+        const temp_gw = new Gateway();
+        try {
+          await temp_gw.connect(ccp, {
+            wallet,
+            identity: orgUserId,
+            discovery: { enabled: true, asLocalhost: true },
+          });
+
+          gateways.push(temp_gw);
+        } catch (error) {
+          console.error(`Failed to connect: ${error}`);
+        }
+      }
     }
   } catch (error) {
     console.error(`Failed to run the application: ${error}`);
   }
 
-  return gateway;
+  return gateways[(channelNum - 1) * numOfOrgs + orgNum - 1];
 };
 
-const getNetwork = async () => {
-  if (network != null) {
-    return network;
+const getNetwork = async (orgNum, channelNum) => {
+  if (networks != null && networks.length > 0) {
+    return networks[(channelNum - 1) * numOfOrgs + orgNum - 1];
   }
 
   try {
-    network = await (await getGateway()).getNetwork(channelName);
+    for (let i = 1; i <= numOfChannels; i++) {
+      for (let j = 1; j <= numOfOrgs; j++) {
+        networks.push(await (await getGateway(j, i)).getNetwork("channel" + i));
+      }
+    }
+
   } catch (error) {
     console.error(`Failed to get network: ${error}`);
   }
 
-  return network;
+  return networks[(channelNum - 1) * numOfOrgs + orgNum - 1];
 };
 
-const getContract = async () => {
-  if (contract != null) {
-    return contract;
+const getContract = async (orgNum, channelNum) => {
+  if (orgNum < 1 || orgNum > numOfOrgs) {
+    throw new Error("Invalid organization number");
+  }
+
+  if (channelNum < 1 || channelNum > numOfChannels) {
+    throw new Error("Invalid channel number");
+  }
+
+  if (contracts != null && contracts.length > 0) {
+    console.log("🚀 ~ getContract ~ contracts:", contracts)
+    return contracts[(channelNum - 1) * numOfOrgs + orgNum - 1];
   }
 
   try {
-    contract = await (await getNetwork()).getContract(chaincodeName);
+    for (let i = 1; i <= numOfChannels; i++) {
+      for (let j = 1; j <= numOfOrgs; j++) {
+        contracts.push(await (await getNetwork(j, i)).getContract("basic" + i));
+      }
+    }
   } catch (error) {
     console.error(`Failed to get contract: ${error}`);
   }
 
-  return contract;
+  return contracts[(channelNum - 1) * numOfOrgs + orgNum - 1];
 };
 
 module.exports = {

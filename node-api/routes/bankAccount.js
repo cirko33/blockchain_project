@@ -41,7 +41,7 @@ router.post("/create-bank-account", async (req, res) => {
       return res.status(400).send({ message: "Currency is a mandatory field!" });
     }
 
-    const contract = await getContract();
+    const contract = await getContract(req.org, req.channel);
     const result = await contract.submitTransaction(
       "CreateBankAccount",
       id,
@@ -56,7 +56,7 @@ router.post("/create-bank-account", async (req, res) => {
     }
   } catch (e) {
     console.error(`Error occurred: ${e}`);
-    return res.send("Method invoke failed!");
+    res.status(500).send("Method invoke failed!");
   }
 });
 
@@ -95,7 +95,7 @@ router.post("/transfer-funds", async (req, res) => {
       return res.status(400).send({ message: "Convert is a mandatory field!" });
     }
 
-    const contract = await getContract();
+    const contract = await getContract(req.org, req.channel);
 
     const sameCurrency = await contract.submitTransaction(
       "CheckAccountCurrencies",
@@ -124,7 +124,7 @@ router.post("/transfer-funds", async (req, res) => {
     }
   } catch (e) {
     console.error(`Error occurred: ${e}`);
-    return res.send("Method invoke failed!");
+    res.status(500).send("Method invoke failed!");
   }
 });
 
@@ -147,7 +147,7 @@ router.post("/withdraw-funds", async (req, res) => {
       return res.status(400).send({ message: "Amount is a mandatory field!" });
     }
 
-    const contract = await getContract();
+    const contract = await getContract(req.org, req.channel);
     const result = await contract.submitTransaction(
       "WithdrawFunds",
       accountId,
@@ -160,7 +160,7 @@ router.post("/withdraw-funds", async (req, res) => {
     }
   } catch (e) {
     console.error(`Error occurred: ${e}`);
-    return res.send("Method invoke failed!");
+    res.status(500).send("Method invoke failed!");
   }
 });
 
@@ -191,7 +191,7 @@ router.post("/deposit-funds", async (req, res) => {
       return res.status(400).send({ message: "Amount is a mandatory field!" });
     }
 
-    const contract = await getContract();
+    const contract = await getContract(req.org, req.channel);
     const result = await contract.submitTransaction(
       "DepositFunds",
       accountId,
@@ -205,7 +205,7 @@ router.post("/deposit-funds", async (req, res) => {
     }
   } catch (e) {
     console.error(`Error occurred: ${e}`);
-    return res.send("Method invoke failed!");
+    res.status(500).send("Method invoke failed!");
   }
 });
 
@@ -229,7 +229,7 @@ router.patch("/check-account-currencies", async (req, res) => {
       return res.status(400).send({ message: "Id2 is a mandatory field!" });
     }
 
-    const contract = await getContract();
+    const contract = await getContract(req.org, req.channel);
     const result = await contract.submitTransaction(
       "CheckAccountCurrencies",
       id1,
@@ -242,7 +242,7 @@ router.patch("/check-account-currencies", async (req, res) => {
     }
   } catch (e) {
     console.error(`Error occurred: ${e}`);
-    return res.send("Method invoke failed!");
+    res.status(500).send("Method invoke failed!");
   }
 });
 

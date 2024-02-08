@@ -8,7 +8,7 @@ dotenv.config({ path: path.resolve(__dirname, "env", "development.env") });
 const buildCCPOrg = (n) => {
   const organizationsPath =
     process.env["ORGANIZATIONS_PATH"] ||
-    path.resolve(__dirname, "..", "..", "network", "organizations");
+    path.resolve(__dirname, "..", "network", "organizations");
   const ccpPath = path.resolve(
     organizationsPath,
     "peerOrganizations",
@@ -28,16 +28,9 @@ const buildCCPOrg = (n) => {
   return ccp;
 };
 
-const buildWallet = async (walletPath) => {
-  let wallet;
-  if (walletPath) {
-    wallet = await Wallets.newFileSystemWallet(walletPath);
-    console.log(`Built a file system wallet at ${walletPath}`);
-  } else {
-    wallet = await Wallets.newInMemoryWallet();
-    console.log("Built an in memory wallet");
-  }
-
+const buildWallet = async () => {
+  let wallet = await Wallets.newInMemoryWallet();
+  console.log("Built an in memory wallet");
   return wallet;
 };
 

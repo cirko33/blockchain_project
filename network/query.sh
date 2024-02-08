@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ $# -lt 1 ]; then
-    echo "Usage: ./query.sh <function> [args...]"
+if [ $# -lt 2 ]; then
+    echo "Usage: ./query.sh <channel-num> <function> [args...]"
     exit 1
 fi
 
@@ -17,7 +17,7 @@ function createArgs() {
     ARGS="{\"Args\":[$ARGS]}"
 }
 
-createArgs $@
+createArgs ${@:2}
 
 # Query chaincode
-peer chaincode query -C channel1 -n basic1 -c "$ARGS"
+peer chaincode query -C channel$1 -n basic$1 -c "$ARGS"

@@ -8,7 +8,7 @@ const router = Router();
 
 router.get("/get-all-banks", async (req, res) => {
     try {
-        const contract = await getContract();
+        const contract = await getContract(req.org, req.channel);
         const result = await contract.submitTransaction(
             "GetAllBanks"
         );
@@ -20,7 +20,7 @@ router.get("/get-all-banks", async (req, res) => {
         }
     } catch (e) {
         console.error(`Error occurred: ${e}`);
-        return res.send("Method invoke failed!");
+        res.status(500).send("Method invoke failed!");
     }
 });
 
@@ -35,7 +35,7 @@ router.get("/get-bank", async (req, res) => {
             return res.status(400).send({ message: "Id is a mandatory field!" });
         }
 
-        const contract = await getContract();
+        const contract = await getContract(req.org, req.channel);
         const result = await contract.submitTransaction(
             "GetBank", id
         );
@@ -47,7 +47,7 @@ router.get("/get-bank", async (req, res) => {
         }
     } catch (e) {
         console.error(`Error occurred: ${e}`);
-        return res.send("Method invoke failed!");
+        res.status(500).send("Method invoke failed!");
     }
 });
 
@@ -80,7 +80,7 @@ router.post("/create-bank", async (req, res) => {
         }
     } catch (e) {
         console.error(`Error occurred: ${e}`);
-        return res.send("Method invoke failed!");
+        res.status(500).send("Method invoke failed!");
     }
 });
 

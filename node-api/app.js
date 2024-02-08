@@ -12,6 +12,14 @@ app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
 
+// ORG MIDDLEWARE
+app.use((req, res, next) => {
+  req.org = req.query.org || 1;
+  req.channel = req.query.channel || 1;
+  next();
+});
+
+
 const bankAccountRoutes = require("./routes/bankAccount");
 const bankRoutes = require("./routes/bank");
 const personRoutes = require("./routes/persons")

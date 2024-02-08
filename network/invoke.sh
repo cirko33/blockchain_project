@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ $# -lt 1 ]; then
-    echo "Usage: ./invoke.sh <function> [args...]"
+if [ $# -lt 2 ]; then
+    echo "Usage: ./invoke.sh <channel-num> <function> [args...]"
     exit 1
 fi
 
@@ -33,7 +33,7 @@ function createPeer0Connections() {
     done
 }
 
-createCommand $@
+createCommand ${@:2}
 createPeer0Connections
 
 peer chaincode invoke \
@@ -41,7 +41,7 @@ peer chaincode invoke \
     --ordererTLSHostnameOverride orderer.example.com \
     --tls \
     --cafile "${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem" \
-    -C channel1 \
-    -n basic1 \
+    -C channel$1\
+    -n basic$1 \
     $PEER_CONNECTIONS \
     -c "$COMMAND"
