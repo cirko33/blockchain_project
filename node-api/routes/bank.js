@@ -7,8 +7,22 @@ const { prettyJSONString } = require("../utils/utils");
 const router = Router();
 
 router.get("/get-all-banks", async (req, res) => {
+    /* #swagger.parameters['org'] = {
+        in: 'query',                            
+        required: false,                     
+        type: 'integer'
+
+    } 
+
+    #swagger.parameters['channel'] = {
+        in: 'query',                            
+        required: false,                     
+        type: 'integer'
+    } 
+
+    */
     try {
-        const contract = await getContract(req.org, req.channel);
+        const contract = await getContract(req.query.org, req.query.channel);
         const result = await contract.submitTransaction(
             "GetAllBanks"
         );
@@ -25,6 +39,26 @@ router.get("/get-all-banks", async (req, res) => {
 });
 
 router.get("/get-bank", async (req, res) => {
+    /* #swagger.parameters['org'] = {
+        in: 'query',                            
+        required: false,                     
+        type: 'integer'
+
+    } 
+
+    #swagger.parameters['channel'] = {
+        in: 'query',                            
+        required: false,                     
+        type: 'integer'
+    } 
+
+    #swagger.parameters['id'] = {
+        in: 'query',                            
+        required: true,                     
+        type: 'integer'
+    }
+
+    */
     try {
         let id;
 
@@ -52,6 +86,44 @@ router.get("/get-bank", async (req, res) => {
 });
 
 router.post("/create-bank", async (req, res) => {
+    /* #swagger.parameters['org'] = {
+        in: 'query',                            
+        required: false,                     
+        type: 'integer'
+
+    } 
+
+    #swagger.parameters['channel'] = {
+        in: 'query',                            
+        required: false,                     
+        type: 'integer'
+    } 
+
+    #swagger.parameters['body'] = {
+        in: 'body',
+        required: true,
+        type: 'object',
+        schema: {
+            id: {
+                type: 'integer',
+                required: true
+            },
+            location: {
+                type: 'string',
+                required: true
+            },
+            pib: {
+                type: 'string',
+                required: true
+            },
+            foundationYear: {
+                type: 'integer',
+                required: true
+            }
+        }
+    }
+
+    */
     try {
         let id;
         let location;
@@ -64,13 +136,16 @@ router.post("/create-bank", async (req, res) => {
             if (location.length < 1) throw "";
             pib = req.body["pib"]
             if (pib.length < 1) throw "";
+            foundationYear = req.body["foundationYear"]
+            if (foundationYear.length < 1) throw "";
+
         } catch (_) {
             return res.status(400).send({ message: "Id, location and pib are mandatory fields!" });
         }
 
-        const contract = await getContract();
+        const contract = await getContract(req.org, req.channel);
         const result = await contract.submitTransaction(
-            "CreateBank", id, location, pib
+            "CreateBank", id, location, pib, foundationYear
         );
 
         try {
