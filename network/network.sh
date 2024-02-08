@@ -18,7 +18,7 @@ export VERBOSE=false
 
 export CONFIG_PATH=${PWD}/config
 export ORGANIZATION_NUMBER=4
-export PEER_NUMBER=1
+export PEER_NUMBER=4
 
 
 . scripts/utils.sh

@@ -1,5 +1,8 @@
 . scripts/utils.sh
 
+successNum=0
+failNum=0
+
 function query_function() {
     func=$1
     args=${@:2}
@@ -7,8 +10,10 @@ function query_function() {
     ./query.sh 1 $func $args | json_pp
     if [ $? -ne 0 ]; then
         warnln "Failed to query $func"
+        failNum=$(($failNum + 1))
     else
         successln "Test passed"
+        successNum=$(($successNum + 1))
     fi
      
     echo ""
@@ -22,8 +27,10 @@ function invoke_function() {
     ./invoke.sh 1 $func $args
     if [ $? -ne 0 ]; then
         warnln "Failed to invoke $func"
+        failNum=$(($failNum + 1))
     else
         successln "Test passed"
+        successNum=$(($successNum + 1))
     fi
     
     echo ""
@@ -96,3 +103,6 @@ invoke_function RemoveCard 301 51
 query_function GetBankAccount 51
 invoke_function RemoveCard 302 51
 query_function GetBankAccount 51
+
+successln "Success: $successNum"
+warnln "Failed: $failNum"
