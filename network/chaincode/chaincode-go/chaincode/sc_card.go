@@ -76,56 +76,56 @@ func (s *SmartContract) CreateCard(ctx contractapi.TransactionContextInterface, 
 }
 
 // Remove card
-func (s *SmartContract) RemoveCard(ctx contractapi.TransactionContextInterface, cardId, bankAccountId int64) error {
+func (s *SmartContract) RemoveCard(ctx contractapi.TransactionContextInterface, cardId, bankAccountId int64) (*Card, error) {
 	bankAccount, err := s.GetBankAccount(ctx, bankAccountId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	card, err1 := s.GetCard(ctx,cardId)
 
 	if err1 != nil {
-		return err1
+		return nil, err1
 	}
 
 	if card.BankAccountId != ToBankAccountId(bankAccountId){
-		return fmt.Errorf("Card with given card id %d does not exist in bank account with id %d", cardId, bankAccountId)
+		return nil, fmt.Errorf("Card with given card id %d does not exist in bank account with id %d", cardId, bankAccountId)
 	}
 
 	index, found := FindCardIndexById(bankAccount.Cards, ToCardId(cardId))
     if found {
         fmt.Printf("Found card index: %d\n", index)
     } else {
-        fmt.Println("Card not found.")
+        return nil, fmt.Errorf("Card not found.")
     }
 
 	if index < 0 || index >= len(bankAccount.Cards) {
-        return fmt.Errorf("Index out of range")
+        return nil, fmt.Errorf("Index out of range")
     }
 
     bankAccount.Cards = append(bankAccount.Cards[:index], bankAccount.Cards[index+1:]...)
 
 	bankAccountJSON, err := json.Marshal(*bankAccount)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	cardJSON, err1 := json.Marshal(*card)
 	if err1 != nil {
-		return err1
+		return nil, err1
 	}
 
 	err = ctx.GetStub().PutState(bankAccount.Id, bankAccountJSON)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = ctx.GetStub().PutState(card.Id, cardJSON)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return card, nil
 }
 
 

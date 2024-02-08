@@ -55,7 +55,7 @@ router.post("/create-card", async (req, res) => {
       }
     } catch (e) {
       console.error(`Error occurred: ${e}`);
-      return res.send("Method invoke failed!");
+      return res.send("Method invoke failed! " + e.message);
     }
   });
 
@@ -110,7 +110,7 @@ router.post("/create-card", async (req, res) => {
       }
     } catch (e) {
       console.error(`Error occurred: ${e}`);
-      return res.send("Method invoke failed!");
+      return res.send("Method invoke failed! " + e.message);
     }
   });
 
