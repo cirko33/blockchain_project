@@ -11,7 +11,7 @@ func (s *SmartContract) GetBankAccount(ctx contractapi.TransactionContextInterfa
 	bankAccountJSON, err := s.GetEntityById(ctx, BANK_ACCOUNT_TYPE_NAME, id)
 
 	if err != nil || bankAccountJSON == nil {
-		return nil, err
+		return nil, fmt.Errorf("Bank account with given id %d doesn't exist", id)
 	}
 
 	var bankAccount BankAccount
@@ -25,28 +25,32 @@ func (s *SmartContract) GetBankAccount(ctx contractapi.TransactionContextInterfa
 
 // Create bank account
 func (s *SmartContract) CreateBankAccount(ctx contractapi.TransactionContextInterface, id int64, personId int64, bankId int64, currency string, balance float64) (*BankAccount, error) {
-	existingBankAccount, err := s.GetBankAccount(ctx, id)
+	exists, err := s.EntityExists(ctx, BANK_ACCOUNT_TYPE_NAME, id)
 	if err != nil {
 		return nil, err
 	}
 
-	if existingBankAccount != nil {
+	if exists {
 		return nil, fmt.Errorf("Bank account with given id %d already exists", id)
 	}
 
-	bank, err := s.GetBank(ctx, bankId)
-	if err != nil || bank == nil {
+	bankExists, err := s.EntityExists(ctx, BANK_TYPE_NAME, bankId)
+	if err != nil {
 		return nil, err
+	}
+
+	if !bankExists {
+		return nil, fmt.Errorf("Bank with given id %d doesn't exist", bankId)
 	}
 
 	accountId := ToBankAccountId(id)
 	account := BankAccount{
 		Id:       accountId,
 		PersonId: ToPersonId(personId),
-		BankId:   bank.Id,
+		BankId:   ToBankId(bankId),
 		Balance:  balance,
 		Currency: currency,
-		Cards:    make(map[string]Card, 0),
+		Cards:    make([]Card, 0),
 	}
 
 	accountJSON, err := json.Marshal(account)

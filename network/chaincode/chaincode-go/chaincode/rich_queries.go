@@ -242,6 +242,59 @@ func (s *SmartContract) GetBankAccountsByBank(ctx contractapi.TransactionContext
 	return bankAccounts, nil
 }
 
+
+func (s *SmartContract) CheckBankAccounts(ctx contractapi.TransactionContextInterface, accountId1, accountId2 int64, currency string) (int, error) {
+queryString := fmt.Sprintf(`{
+	"selector": {
+		"$and": [
+			{
+				"currency": {
+					"$eq": "%s"
+				}
+			},
+			{
+				"$or": [
+					{
+						"_id": {
+							"$eq": "%s"
+						}
+					},
+					{
+						"_id": {
+							"$eq": "%s"
+						}
+					}
+				]
+			}
+		]
+	}
+}`, currency, ToBankAccountId(accountId1), ToBankAccountId(accountId2))
+
+  resultsIterator, err := ctx.GetStub().GetQueryResult(queryString)
+
+  if err != nil {
+	  return 0, err
+  }
+  defer resultsIterator.Close()
+
+  var bankAccounts []*BankAccount
+  for resultsIterator.HasNext() {
+	  queryResponse, err := resultsIterator.Next()
+	  if err != nil {
+		  return 0, err
+	  }
+
+	  var bankaccount BankAccount
+	  err = json.Unmarshal(queryResponse.Value, &bankaccount)
+	  if err != nil {
+		  return 0, err
+	  }
+	  bankAccounts = append(bankAccounts, &bankaccount)
+
+}
+return len(bankAccounts), nil
+}
+
 type BankWithAccounts struct {
 	Bank         Bank           `json:"bank"`
 	BankAccounts []*BankAccount `json:"bankAccounts"`

@@ -7,58 +7,133 @@ import (
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
+// Get card
+func (s *SmartContract) GetCard(ctx contractapi.TransactionContextInterface, id int64) (*Card, error) {
+	cardJSON, err := s.GetEntityById(ctx, CARD_TYPE_NAME, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if  cardJSON == nil {
+		return nil, fmt.Errorf("Card with given id %d does not exist", id)
+	}
+
+	var card Card
+	err = json.Unmarshal(cardJSON, &card)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal card: %v", err)
+	}
+
+	return &card, nil
+}
+
 // Create card
-func (s *SmartContract) CreateCard(ctx contractapi.TransactionContextInterface, cardNumber string, bankAccountId int64) (*Card, error) {
+func (s *SmartContract) CreateCard(ctx contractapi.TransactionContextInterface, cardNumber string, cardId, bankAccountId int64) (*Card, error) {
 	bankAccount, err := s.GetBankAccount(ctx, bankAccountId)
 	if err != nil {
 		return nil, err
 	}
 
-	_, exists := bankAccount.Cards[cardNumber]
-	if exists {
-		return nil, fmt.Errorf("Card with given card number %s already exists in bank account", cardNumber)
+	if bankAccount == nil {
+		return nil, fmt.Errorf("Bank account does not exist")
 	}
 
-	bankAccount.Cards[cardNumber] = Card{
+	for _, c := range bankAccount.Cards {
+        if c.Id == ToCardId(cardId) {
+			return nil, fmt.Errorf("Card with given card number %s already exists in bank account", cardNumber)
+        }
+    }
+
+	card := Card{
+		Id: ToCardId(cardId),
 		CardNumber: cardNumber,
+		BankAccountId: ToBankAccountId(bankAccountId),
 	}
+
+	bankAccount.Cards = append(bankAccount.Cards,card)
 
 	bankAccountJSON, err := json.Marshal(bankAccount)
 	if err != nil {
 		return nil, err
 	}
 
+	cardJSON, err := json.Marshal(card)
+	if err != nil {
+		return nil, err
+	}
+
 	err = ctx.GetStub().PutState(bankAccount.Id, bankAccountJSON)
 	if err != nil {
 		return nil, err
 	}
 
-	card := bankAccount.Cards[cardNumber]
+	err = ctx.GetStub().PutState(card.Id, cardJSON)
+	if err != nil {
+		return nil, err
+	}
+
 	return &card, nil
 }
 
 // Remove card
-func (s *SmartContract) RemoveCard(ctx contractapi.TransactionContextInterface, cardNumber string, bankAccountId int64) error {
+func (s *SmartContract) RemoveCard(ctx contractapi.TransactionContextInterface, cardId, bankAccountId int64) error {
 	bankAccount, err := s.GetBankAccount(ctx, bankAccountId)
 	if err != nil {
 		return err
 	}
 
-	_, exists := bankAccount.Cards[cardNumber]
-	if !exists {
-		return fmt.Errorf("Card with given card number %s does not exist in bank account ID %d", cardNumber, bankAccountId)
+	card, err1 := s.GetCard(ctx,cardId)
+
+	if err1 != nil {
+		return err1
 	}
 
-	delete(bankAccount.Cards, cardNumber)
+	if card.BankAccountId != ToBankAccountId(bankAccountId){
+		return fmt.Errorf("Card with given card id %d does not exist in bank account with id %d", cardId, bankAccountId)
+	}
+
+	index, found := FindCardIndexById(bankAccount.Cards, ToCardId(cardId))
+    if found {
+        fmt.Printf("Found card index: %d\n", index)
+    } else {
+        fmt.Println("Card not found.")
+    }
+
+	if index < 0 || index >= len(bankAccount.Cards) {
+        return fmt.Errorf("Index out of range")
+    }
+
+    bankAccount.Cards = append(bankAccount.Cards[:index], bankAccount.Cards[index+1:]...)
 
 	bankAccountJSON, err := json.Marshal(*bankAccount)
 	if err != nil {
 		return err
 	}
+
+	cardJSON, err1 := json.Marshal(*card)
+	if err1 != nil {
+		return err1
+	}
+
 	err = ctx.GetStub().PutState(bankAccount.Id, bankAccountJSON)
 	if err != nil {
 		return err
 	}
 
+	err = ctx.GetStub().PutState(card.Id, cardJSON)
+	if err != nil {
+		return err
+	}
+
 	return nil
+}
+
+
+func FindCardIndexById(cards []Card, id string) (int, bool) {
+    for index, card := range cards {
+        if card.Id == id {
+            return index, true
+        }
+    }
+    return -1, false
 }

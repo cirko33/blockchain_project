@@ -28,11 +28,13 @@ type BankAccount struct {
 	BankId   string          `json:"bankId"`
 	Balance  float64         `json:"balance"`
 	Currency string          `json:"currency"`
-	Cards    map[string]Card `json:"cards"`
+	Cards    []Card          `json:"cards"`
 }
 
 type Card struct {
-	CardNumber string `json:"cardNumber"`
+	Id              string        `json:"id"`
+	CardNumber      string        `json:"cardNumber"`
+	BankAccountId   string        `json:"bankAccountId"`
 }
 
 type ExchangeRate struct {

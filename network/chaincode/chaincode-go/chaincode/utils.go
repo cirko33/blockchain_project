@@ -41,6 +41,10 @@ func ToBankAccountId(intId int64) string {
 	return ToEntityId(BANK_ACCOUNT_TYPE_NAME, intId)
 }
 
+func ToCardId(intId int64) string {
+	return ToEntityId(CARD_TYPE_NAME, intId)
+}
+
 func BuildMockBanks(count int64) []Bank {
 	var result []Bank
 	for bank_id := int64(0); bank_id < count; bank_id++ {
@@ -109,8 +113,10 @@ func BuildAccountsForPerson(person Person, index int64, bank Bank, startId int64
 			BankId:   bank.Id,
 			Balance:  GetRandomBalance(),
 			Currency: currency_labels[j],
-			Cards: map[string]Card{
-				card_number: {CardNumber: card_number},
+			Cards: []Card{
+				 {   Id: ToCardId(account_id),
+					CardNumber: card_number,
+				},
 			},
 		})
 	}
