@@ -110,17 +110,18 @@ func (s *SmartContract) TransferFunds(ctx contractapi.TransactionContextInterfac
 		return nil, fmt.Errorf("the source bank account balance is insufficient")
 	}
 
+	amount2 := amount
 	if fromAccount.Currency != toAccount.Currency {
 		convertedAmount, err := ConvertCurrency(amount, fromAccount.Currency, toAccount.Currency)
 		if err != nil {
 			return nil, err
 		}
-		amount *= convertedAmount
+		amount2 = convertedAmount
 	}
 
 	// change balances
 	fromAccount.Balance -= amount
-	toAccount.Balance += amount
+	toAccount.Balance += amount2
 
 	fromAccountJSON, err := json.Marshal(*fromAccount)
 	if err != nil {

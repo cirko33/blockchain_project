@@ -14,7 +14,7 @@ func (s *SmartContract) GetCard(ctx contractapi.TransactionContextInterface, id 
 		return nil, err
 	}
 
-	if  cardJSON == nil {
+	if cardJSON == nil {
 		return nil, fmt.Errorf("Card with given id %d does not exist", id)
 	}
 
@@ -39,18 +39,18 @@ func (s *SmartContract) CreateCard(ctx contractapi.TransactionContextInterface, 
 	}
 
 	for _, c := range bankAccount.Cards {
-        if c.Id == ToCardId(cardId) {
+		if c.Id == ToCardId(cardId) {
 			return nil, fmt.Errorf("Card with given card number %s already exists in bank account", cardNumber)
-        }
-    }
+		}
+	}
 
 	card := Card{
-		Id: ToCardId(cardId),
-		CardNumber: cardNumber,
+		Id:            ToCardId(cardId),
+		CardNumber:    cardNumber,
 		BankAccountId: ToBankAccountId(bankAccountId),
 	}
 
-	bankAccount.Cards = append(bankAccount.Cards,card)
+	bankAccount.Cards = append(bankAccount.Cards, card)
 
 	bankAccountJSON, err := json.Marshal(bankAccount)
 	if err != nil {
@@ -82,28 +82,28 @@ func (s *SmartContract) RemoveCard(ctx contractapi.TransactionContextInterface, 
 		return nil, err
 	}
 
-	card, err1 := s.GetCard(ctx,cardId)
+	card, err1 := s.GetCard(ctx, cardId)
 
 	if err1 != nil {
 		return nil, err1
 	}
 
-	if card.BankAccountId != ToBankAccountId(bankAccountId){
+	if card.BankAccountId != ToBankAccountId(bankAccountId) {
 		return nil, fmt.Errorf("Card with given card id %d does not exist in bank account with id %d", cardId, bankAccountId)
 	}
 
 	index, found := FindCardIndexById(bankAccount.Cards, ToCardId(cardId))
-    if found {
-        fmt.Printf("Found card index: %d\n", index)
-    } else {
-        return nil, fmt.Errorf("Card not found.")
-    }
+	if found {
+		fmt.Printf("Found card index: %d\n", index)
+	} else {
+		return nil, fmt.Errorf("card not found")
+	}
 
 	if index < 0 || index >= len(bankAccount.Cards) {
-        return nil, fmt.Errorf("Index out of range")
-    }
+		return nil, fmt.Errorf("index out of range")
+	}
 
-    bankAccount.Cards = append(bankAccount.Cards[:index], bankAccount.Cards[index+1:]...)
+	bankAccount.Cards = append(bankAccount.Cards[:index], bankAccount.Cards[index+1:]...)
 
 	bankAccountJSON, err := json.Marshal(*bankAccount)
 	if err != nil {
@@ -123,12 +123,11 @@ func (s *SmartContract) RemoveCard(ctx contractapi.TransactionContextInterface, 
 	return card, nil
 }
 
-
 func FindCardIndexById(cards []Card, id string) (int, bool) {
-    for index, card := range cards {
-        if card.Id == id {
-            return index, true
-        }
-    }
-    return -1, false
+	for index, card := range cards {
+		if card.Id == id {
+			return index, true
+		}
+	}
+	return -1, false
 }

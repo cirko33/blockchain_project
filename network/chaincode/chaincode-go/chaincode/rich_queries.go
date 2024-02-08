@@ -172,12 +172,12 @@ func (s *SmartContract) GetBanksByLocation(ctx contractapi.TransactionContextInt
 }
 
 // GetBankAccountsByPerson returns all bank accounts of the given person
-func (s *SmartContract) GetBankAccountsByPerson(ctx contractapi.TransactionContextInterface, personId string) ([]*BankAccount, error) {
+func (s *SmartContract) GetBankAccountsByPerson(ctx contractapi.TransactionContextInterface, personId int64) ([]*BankAccount, error) {
 	queryString := `
 	{
 		"selector": {
 			"personId": {
-				"$eq": "` + personId + `"
+				"$eq": "` + ToPersonId(personId) + `"
 			}
 		}
 	}`
@@ -207,44 +207,8 @@ func (s *SmartContract) GetBankAccountsByPerson(ctx contractapi.TransactionConte
 	return bankaccounts, nil
 }
 
-func (s *SmartContract) GetBankAccountsByBank(ctx contractapi.TransactionContextInterface, bankId string) ([]*BankAccount, error) {
-	queryString := `
-	{
-		"selector": {
-			"bankId": {
-				"$eq": "` + bankId + `"
-			}
-		}
-	}`
-
-	resultsIterator, err := ctx.GetStub().GetQueryResult(queryString)
-
-	if err != nil {
-		return nil, err
-	}
-	defer resultsIterator.Close()
-
-	var bankAccounts []*BankAccount
-	for resultsIterator.HasNext() {
-		queryResponse, err := resultsIterator.Next()
-		if err != nil {
-			return nil, err
-		}
-
-		var bankaccount BankAccount
-		err = json.Unmarshal(queryResponse.Value, &bankaccount)
-		if err != nil {
-			return nil, err
-		}
-		bankAccounts = append(bankAccounts, &bankaccount)
-	}
-
-	return bankAccounts, nil
-}
-
-
 func (s *SmartContract) CheckBankAccounts(ctx contractapi.TransactionContextInterface, accountId1, accountId2 int64, currency string) (int, error) {
-queryString := fmt.Sprintf(`{
+	queryString := fmt.Sprintf(`{
 	"selector": {
 		"$and": [
 			{
@@ -270,34 +234,70 @@ queryString := fmt.Sprintf(`{
 	}
 }`, currency, ToBankAccountId(accountId1), ToBankAccountId(accountId2))
 
-  resultsIterator, err := ctx.GetStub().GetQueryResult(queryString)
+	resultsIterator, err := ctx.GetStub().GetQueryResult(queryString)
 
-  if err != nil {
-	  return 0, err
-  }
-  defer resultsIterator.Close()
+	if err != nil {
+		return 0, err
+	}
+	defer resultsIterator.Close()
 
-  var bankAccounts []*BankAccount
-  for resultsIterator.HasNext() {
-	  queryResponse, err := resultsIterator.Next()
-	  if err != nil {
-		  return 0, err
-	  }
+	var bankAccounts []*BankAccount
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+		if err != nil {
+			return 0, err
+		}
 
-	  var bankaccount BankAccount
-	  err = json.Unmarshal(queryResponse.Value, &bankaccount)
-	  if err != nil {
-		  return 0, err
-	  }
-	  bankAccounts = append(bankAccounts, &bankaccount)
+		var bankaccount BankAccount
+		err = json.Unmarshal(queryResponse.Value, &bankaccount)
+		if err != nil {
+			return 0, err
+		}
+		bankAccounts = append(bankAccounts, &bankaccount)
 
-}
-return len(bankAccounts), nil
+	}
+	return len(bankAccounts), nil
 }
 
 type BankWithAccounts struct {
 	Bank         Bank           `json:"bank"`
 	BankAccounts []*BankAccount `json:"bankAccounts"`
+}
+
+// GetBankAccountsByBank is part of GetAllBanksWithAccounts
+func (s *SmartContract) GetBankAccountsByBank(ctx contractapi.TransactionContextInterface, bankId string) ([]*BankAccount, error) {
+	queryString := `
+	{
+		"selector": {
+			"bankId": {
+				"$eq": "` + bankId + `"
+			}
+		}
+	}`
+
+	resultsIterator, err := ctx.GetStub().GetQueryResult(queryString)
+
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	var bankAccounts []*BankAccount
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+		if err != nil {
+			return nil, err
+		}
+
+		var bankAccount BankAccount
+		err = json.Unmarshal(queryResponse.Value, &bankAccount)
+		if err != nil {
+			return nil, err
+		}
+		bankAccounts = append(bankAccounts, &bankAccount)
+	}
+
+	return bankAccounts, nil
 }
 
 // GetAllBanksWithAccounts returns all banks with their accounts
@@ -310,12 +310,12 @@ func (s *SmartContract) GetAllBanksWithAccounts(ctx contractapi.TransactionConte
 	var banksWithAccounts []*BankWithAccounts
 	for _, bank := range banks {
 
-		bankaccounts, err := s.GetBankAccountsByBank(ctx, bank.Id)
+		bankAccounts, err := s.GetBankAccountsByBank(ctx, bank.Id)
 		if err != nil {
 			return nil, err
 		}
 
-		banksWithAccounts = append(banksWithAccounts, &BankWithAccounts{Bank: *bank, BankAccounts: bankaccounts})
+		banksWithAccounts = append(banksWithAccounts, &BankWithAccounts{Bank: *bank, BankAccounts: bankAccounts})
 	}
 
 	return banksWithAccounts, nil

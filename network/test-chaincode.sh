@@ -33,6 +33,18 @@ function invoke_function() {
 successln "Testing chaincode on channel1"
 sleep 1
 
+infoln "Testing rich queries"
+query_function CheckBankAccounts 51 53 RSD
+query_function CheckBankAccounts 53 54 RSD
+query_function SearchPersonsByName Person_1
+query_function SearchPersonsBySurname Personic_1
+query_function SearchPersonsBySurnameAndEmail Personic_1 mejl_1@gmail.com
+query_function GetAccountsWithMoreThanBalance RSD 100
+query_function GetBanksOlderThan 2012
+query_function GetBanksByLocation Location_1
+query_function GetBankAccountsByPerson 1
+query_function GetAllBanksWithAccounts
+
 infoln "Testing banks"
 invoke_function CreateBank 31 Belgrade 1234 2012
 invoke_function CreateBank 32 Belgrade 1234 2013
@@ -40,11 +52,11 @@ query_function GetAllBanks
 query_function GetBank 31
 
 infoln "Testing bank accounts"
-invoke_function CreateBankAccount 51 1 31 RSD 1000.0
-invoke_function CreateBankAccount 52 1 31 RSD 1000.0
-invoke_function CreateBankAccount 53 1 31 EUR 10.0
-invoke_function CreateBankAccount 54 1 31 EUR 10.0
-invoke_function CreateBankAccount 55 1 32 RSD 1000.0
+invoke_function CreateBankAccount 101 1 31 RSD 1000.0
+invoke_function CreateBankAccount 102 1 31 RSD 1000.0
+invoke_function CreateBankAccount 103 1 31 EUR 10.0
+invoke_function CreateBankAccount 104 1 31 EUR 10.0
+invoke_function CreateBankAccount 105 1 32 RSD 1000.0
 
 query_function GetBankAccount 51
 query_function GetBankAccount 52
@@ -84,18 +96,3 @@ invoke_function RemoveCard 301 51
 query_function GetBankAccount 51
 invoke_function RemoveCard 302 51
 query_function GetBankAccount 51
-
-infoln "Testing rich queries"
-query_function CheckBankAccounts 51 53 RSD
-query_function CheckBankAccounts 53 54 RSD
-query_function SearchPersonsByName Person_1
-query_function SearchPersonsBySurname Personic_1
-query_function SearchPersonsBySurnameAndEmail Personic_1 mejl_1@gmail.com
-query_function GetAccountsWithMoreThanBalance RSD 100
-query_function GetBanksOlderThan 2012
-query_function GetBanksByLocation Location_1
-query_function GetBankAccountsByPerson person-1
-query_function GetBankAccountsByBank bank-1
-query_function GetAllBanksWithAccounts
-
-infoln "Testing account functions"
