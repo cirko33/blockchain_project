@@ -40,7 +40,7 @@ router.post("/create-card", async (req, res) => {
         return res.status(400).send({ message: "Currency is a mandatory field!" });
       }
   
-      const contract = await getContract();
+      const contract = await getContract(req.org, req.channel);
       const result = await contract.submitTransaction(
         "CreateBankAccount",
         id,
@@ -95,7 +95,7 @@ router.post("/create-card", async (req, res) => {
         return res.status(400).send({ message: "Currency is a mandatory field!" });
       }
   
-      const contract = await getContract();
+      const contract = await getContract(req.org, req.channel);
       const result = await contract.submitTransaction(
         "CreateBankAccount",
         id,

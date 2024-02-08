@@ -10,5 +10,8 @@ if [[ $1 == "-i" ]]; then
     ./invoke.sh 1 InitLedger
     ./invoke.sh 2 InitLedger
 fi
+if [[ $2 == "-t" ]]; then
+    ./test-chaincode.sh
+fi
 # read -p "Press any key to continue... " -n1 -s
 # ./network.sh down
